@@ -79,6 +79,7 @@ class ConsistencyCheck(TargetCheck):
     )
     ignore_untranslated = False
     propagates = True
+    batch_project_wide = True
 
     def check_target_unit(self, sources, targets, unit):
         component = unit.translation.component
@@ -123,7 +124,7 @@ class ConsistencyCheck(TargetCheck):
                 reduce(
                     lambda x, y: x
                     | (
-                        Q(source=y["id_hash"])
+                        Q(id_hash=y["id_hash"])
                         & Q(translation__language=y["translation__language"])
                     ),
                     matches,
