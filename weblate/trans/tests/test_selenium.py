@@ -198,6 +198,12 @@ class SeleniumTests(BaseLiveServerTestCase, RegistrationTestMixin, TempDirMixin)
             self.actions.move_to_element(element).perform()
             element.click()
 
+    def upload_file(self, element, filename):
+        filename = os.path.abspath(filename)
+        if not os.path.exists(filename):
+            raise Exception(f"Test file not found: {filename}")
+        element.send_keys(filename)
+
     def clear_field(self, element):
         element.send_keys(Keys.CONTROL + "a")
         element.send_keys(Keys.DELETE)
@@ -504,7 +510,7 @@ class SeleniumTests(BaseLiveServerTestCase, RegistrationTestMixin, TempDirMixin)
         # Upload screenshot
         self.driver.find_element(By.ID, "id_name").send_keys("Automatic translation")
         element = self.driver.find_element(By.ID, "id_image")
-        element.send_keys(get_test_file("screenshot.png"))
+        self.upload_file(element, get_test_file("screenshot.png"))
         with self.wait_for_page_load():
             element.submit()
 
@@ -1009,7 +1015,7 @@ class SeleniumTests(BaseLiveServerTestCase, RegistrationTestMixin, TempDirMixin)
 
         # Upload font
         element = self.driver.find_element(By.ID, "id_font")
-        element.send_keys(FONT)
+        self.upload_file(element, FONT)
         with self.wait_for_page_load():
             self.click(htmlid="upload_font_submit")
 
@@ -1020,7 +1026,7 @@ class SeleniumTests(BaseLiveServerTestCase, RegistrationTestMixin, TempDirMixin)
 
         # Upload second font
         element = self.driver.find_element(By.ID, "id_font")
-        element.send_keys(SOURCE_FONT)
+        self.upload_file(element, SOURCE_FONT)
         with self.wait_for_page_load():
             self.click(htmlid="upload_font_submit")
 
