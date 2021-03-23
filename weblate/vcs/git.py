@@ -75,7 +75,7 @@ class GitRepository(Repository):
         for line in result.splitlines():
             if not line.startswith("ref: "):
                 continue
-            # Parses 'ref: refs/heads/master\tHEAD'
+            # Parses 'ref: refs/heads/main\tHEAD'
             return line.split("\t")[0].split("refs/heads/")[1]
 
         raise RepositoryException(0, "Failed to figure out remote branch")
@@ -981,7 +981,7 @@ class GitLabRepository(GitMergeRequestBase):
             raise RepositoryException(0, error or "Failed to get project")
         return response["id"]
 
-    def disable_fork_features(self, credentials: Dict, forked_url: str):
+    def configure_fork_features(self, credentials: Dict, forked_url: str):
         """Disable features in fork.
 
         GitLab initializes a lot of the features in the fork
@@ -992,7 +992,7 @@ class GitLabRepository(GitMergeRequestBase):
         access_level_dict = {
             "issues_access_level": "disabled",
             "forking_access_level": "disabled",
-            "builds_access_level": "disabled",
+            "builds_access_level": "enabled",
             "wiki_access_level": "disabled",
             "snippets_access_level": "disabled",
             "pages_access_level": "disabled",
@@ -1037,7 +1037,7 @@ class GitLabRepository(GitMergeRequestBase):
             if "ssh_url_to_repo" not in forked_repo:
                 raise RepositoryException(0, error or "Failed to create fork")
 
-        self.disable_fork_features(credentials, forked_repo["_links"]["self"])
+        self.configure_fork_features(credentials, forked_repo["_links"]["self"])
         self.configure_fork_remote(
             forked_repo["ssh_url_to_repo"], credentials["username"]
         )

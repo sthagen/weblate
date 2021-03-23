@@ -23,7 +23,6 @@ from django.db import transaction
 
 from weblate.machinery import MACHINE_TRANSLATION_SERVICES
 from weblate.trans.models import Change, Component, Suggestion, Unit
-from weblate.utils.db import get_nokey_args
 from weblate.utils.state import STATE_FUZZY, STATE_TRANSLATED
 
 
@@ -112,7 +111,8 @@ class AutoTranslate:
         units = (
             self.get_units(False)
             .filter(source__in=translations.keys())
-            .select_for_update(**get_nokey_args())
+            .prefetch_bulk()
+            .select_for_update()
         )
         self.progress_steps = len(units)
 
@@ -173,8 +173,8 @@ class AutoTranslate:
             # Perform the translation
             for pos, unit in enumerate(
                 Unit.objects.filter(id__in=translations.keys())
-                .prefetch()
-                .select_for_update(**get_nokey_args())
+                .prefetch_bulk()
+                .select_for_update()
             ):
                 # Copy translation
                 self.update(unit, self.target_state, translations[unit.pk])

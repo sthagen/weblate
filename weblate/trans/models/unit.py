@@ -127,6 +127,16 @@ class UnitQuerySet(FastDeleteQuerySetMixin, models.QuerySet):
             ),
         )
 
+    def prefetch_bulk(self):
+        """Prefetch useful for bulk editing."""
+        return (
+            self.prefetch()
+            .prefetch_full()
+            .prefetch_related(
+                "defined_variants",
+            )
+        )
+
     def prefetch_recent_content_changes(self):
         """
         Prefetch recent content changes.
@@ -270,6 +280,9 @@ class UnitQuerySet(FastDeleteQuerySetMixin, models.QuerySet):
         """Return list of units ordered by ID."""
         return sorted(self.filter(id__in=ids), key=lambda unit: ids.index(unit.id))
 
+    def select_for_update(self):
+        return super().select_for_update(**get_nokey_args())
+
 
 class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
 
@@ -378,7 +391,10 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         if self.is_source and not self.source_unit:
             self.source_unit = self
             self.save(
-                same_content=True, run_checks=False, update_fields=["source_unit"]
+                same_content=True,
+                run_checks=False,
+                only_save=True,
+                update_fields=["source_unit"],
             )
 
         # Update checks if content or fuzzy flag has changed
@@ -461,7 +477,7 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         ):
             # We can not exclude current unit here as we need to trigger
             # the updates below
-            for unit in self.unit_set.prefetch().prefetch_full():
+            for unit in self.unit_set.prefetch_bulk():
                 unit.update_state()
                 unit.update_priority()
                 unit.run_checks()
@@ -475,23 +491,20 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
             self.translation.component.sync_terminology()
 
     def update_variants(self):
-        old_flags = Flags(self.old_unit.extra_flags, self.old_unit.flags)
-        new_flags = Flags(self.extra_flags, self.flags)
-
-        old_variant = None
-        if old_flags.has_value("variant"):
-            old_variant = old_flags.get_value("variant")
+        variants = self.defined_variants.all()
+        flags = self.all_flags
         new_variant = None
-        if new_flags.has_value("variant"):
-            new_variant = new_flags.get_value("variant")
-
-        # Check for relevant changes
-        if old_variant == new_variant:
-            return
+        remove = False
+        if not flags.has_value("variant"):
+            remove = True
+        else:
+            new_variant = flags.get_value("variant")
+            if any(variant.key != new_variant for variant in variants):
+                remove = True
 
         # Delete stale variant
-        if old_variant:
-            for variant in self.defined_variants.all():
+        if remove:
+            for variant in variants:
                 variant.defining_units.remove(self)
                 if variant.defining_units.count() == 0:
                     variant.delete()
@@ -506,7 +519,8 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
             variant.defining_units.add(self)
 
         # Update variant links
-        self.translation.component.update_variants()
+        if remove or new_variant:
+            self.translation.component.update_variants()
 
     def get_unit_state(self, unit, flags):
         """Calculate translated and fuzzy status."""
@@ -907,7 +921,7 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         This is needed when editing template translation for monolingual formats.
         """
         # Find relevant units
-        for unit in self.unit_set.exclude(id=self.id).prefetch().prefetch_full():
+        for unit in self.unit_set.exclude(id=self.id).prefetch_bulk():
             # Update source and number of words
             unit.source = self.target
             unit.num_words = self.num_words
@@ -1175,9 +1189,7 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         Propagation is currently disabled on import.
         """
         # Fetch current copy from database and lock it for update
-        self.old_unit = Unit.objects.select_for_update(**get_nokey_args()).get(
-            pk=self.pk
-        )
+        self.old_unit = Unit.objects.select_for_update().get(pk=self.pk)
 
         # Handle simple string units
         if isinstance(new_target, str):

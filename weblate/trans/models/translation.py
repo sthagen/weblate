@@ -54,11 +54,7 @@ from weblate.trans.models.unit import (
 from weblate.trans.signals import store_post_load, vcs_pre_commit
 from weblate.trans.util import join_plural, split_plural
 from weblate.trans.validators import validate_check_flags
-from weblate.utils.db import (
-    FastDeleteModelMixin,
-    FastDeleteQuerySetMixin,
-    get_nokey_args,
-)
+from weblate.utils.db import FastDeleteModelMixin, FastDeleteQuerySetMixin
 from weblate.utils.errors import report_error
 from weblate.utils.hash import calculate_hash
 from weblate.utils.render import render_template
@@ -375,7 +371,7 @@ class Translation(
             # Select all current units for update
             dbunits = {
                 unit.id_hash: unit
-                for unit in self.unit_set.select_for_update(**get_nokey_args())
+                for unit in self.unit_set.prefetch_bulk().select_for_update()
             }
 
             # Process based on intermediate store if available
@@ -1176,6 +1172,7 @@ class Translation(
         context: str,
         source: Union[str, List[str]],
         target: Optional[Union[str, List[str]]] = None,
+        extra_flags: str = "",
         is_batch_update: bool = False,
     ):
         user = request.user if request else None
@@ -1200,6 +1197,7 @@ class Translation(
                 kwargs["details"] = {"add_unit": True}
             if is_source:
                 current_target = source
+                kwargs["extra_flags"] = extra_flags
             else:
                 current_target = target
             if current_target is None:
@@ -1291,14 +1289,15 @@ class Translation(
 
     def validate_new_unit_data(
         self,
-        key: str,
+        context: str,
         source: Union[str, List[str]],
         target: Optional[Union[str, List[str]]] = None,
+        extra_flags: Optional[str] = None,
     ):
         extra = {}
         if not self.component.has_template():
             extra["source"] = join_plural(source)
-        if self.unit_set.filter(context=key, **extra).exists():
+        if self.unit_set.filter(context=context, **extra).exists():
             raise ValidationError(_("This string seems to already exist."))
         # Avoid using source translations without a filename
         if not self.filename:
@@ -1308,13 +1307,13 @@ class Translation(
                 raise ValidationError(
                     _("Failed adding string: %s") % _("No translation found.")
                 )
-            translation.validate_new_unit_data(key, source, target)
+            translation.validate_new_unit_data(context, source, target)
             return
         # Always load a new copy of store
         store = self.load_store()
         old_units = len(store.all_units)
         # Add new unit
-        store.new_unit(key, source, target, skip_build=True)
+        store.new_unit(context, source, target, skip_build=True)
         # Serialize the content
         handle = BytesIOMode("", b"")
         # Catch serialization error
@@ -1349,7 +1348,7 @@ class Translation(
                 _("Failed adding string: %s") % _("Failed to parse new string")
             )
         created_source = split_plural(unit.source)
-        if unit.context != key and (
+        if unit.context != context and (
             self.component.has_template()
             or self.component.file_format_cls.set_context_bilingual
         ):

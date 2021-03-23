@@ -40,7 +40,7 @@ token, which you can get in your profile. Use it in the ``Authorization`` header
     :resheader Content-Type: this depends on :http:header:`Accept`
                              header of request
     :resheader Allow: list of allowed HTTP methods on object
-    :>json string detail: verbose description of failure (for HTTP status codes other than :http:statuscode:`200`)
+    :>json string detail: verbose description of the result (for HTTP status codes other than :http:statuscode:`200`)
     :>json int count: total item count for object lists
     :>json string next: next page URL for object lists
     :>json string previous: previous page URL for object lists
@@ -48,6 +48,8 @@ token, which you can get in your profile. Use it in the ``Authorization`` header
     :>json string url: URL to access this resource using API
     :>json string web_url: URL to access this resource using web browser
     :status 200: when request was correctly handled
+    :status 201: when a new object was created successfully
+    :status 204: when an object was created successfully
     :status 400: when form parameters are missing
     :status 403: when access is denied
     :status 429: when throttling is in place
@@ -960,7 +962,7 @@ Projects
 
         curl \
             --data-binary '{
-                "branch": "master",
+                "branch": "main",
                 "file_format": "po",
                 "filemask": "po/*.po",
                 "git_export": "",
@@ -989,7 +991,7 @@ Projects
         Content-Length: 20
 
         {
-            "branch": "master",
+            "branch": "main",
             "file_format": "po",
             "filemask": "po/*.po",
             "git_export": "",
@@ -1017,7 +1019,7 @@ Projects
         Allow: GET, POST, HEAD, OPTIONS
 
         {
-            "branch": "master",
+            "branch": "main",
             "file_format": "po",
             "filemask": "po/*.po",
             "git_export": "",
@@ -1151,7 +1153,7 @@ Components
     .. code-block:: json
 
         {
-            "branch": "master",
+            "branch": "main",
             "file_format": "po",
             "filemask": "po/*.po",
             "git_export": "",
@@ -1241,7 +1243,7 @@ Components
         Allow: GET, POST, HEAD, OPTIONS
 
         {
-            "branch": "master",
+            "branch": "main",
             "file_format": "po",
             "filemask": "po/*.po",
             "git_export": "",
@@ -1670,7 +1672,7 @@ Translations
 
         {
             "component": {
-                "branch": "master",
+                "branch": "main",
                 "file_format": "po",
                 "filemask": "po/*.po",
                 "git_export": "",
@@ -2475,7 +2477,7 @@ Weblate provides various exports to allow you to further process the data.
 
     .. sourcecode:: http
 
-        GET /exports/stats/weblate/master/ HTTP/1.1
+        GET /exports/stats/weblate/main/ HTTP/1.1
         Host: example.com
         Accept: application/json, text/javascript
 
@@ -2503,7 +2505,7 @@ Weblate provides various exports to allow you to further process the data.
                 "translated_percent": 100.0,
                 "translated_words": 3201,
                 "url": "http://hosted.weblate.org/engage/weblate/cs/",
-                "url_translate": "http://hosted.weblate.org/projects/weblate/master/cs/"
+                "url_translate": "http://hosted.weblate.org/projects/weblate/main/cs/"
             },
             {
                 "code": "nl",
@@ -2520,7 +2522,7 @@ Weblate provides various exports to allow you to further process the data.
                 "translated_percent": 73.2,
                 "translated_words": 3201,
                 "url": "http://hosted.weblate.org/engage/weblate/nl/",
-                "url_translate": "http://hosted.weblate.org/projects/weblate/master/nl/"
+                "url_translate": "http://hosted.weblate.org/projects/weblate/main/nl/"
             },
             {
                 "code": "el",
@@ -2537,7 +2539,7 @@ Weblate provides various exports to allow you to further process the data.
                 "translated_percent": 71.6,
                 "translated_words": 3201,
                 "url": "http://hosted.weblate.org/engage/weblate/el/",
-                "url_translate": "http://hosted.weblate.org/projects/weblate/master/el/"
+                "url_translate": "http://hosted.weblate.org/projects/weblate/main/el/"
             }
         ]
 
