@@ -1173,6 +1173,8 @@ class Translation(
         source: Union[str, List[str]],
         target: Optional[Union[str, List[str]]] = None,
         extra_flags: str = "",
+        explanation: str = "",
+        auto_context: bool = False,
         is_batch_update: bool = False,
     ):
         user = request.user if request else None
@@ -1186,6 +1188,13 @@ class Translation(
         source_unit = None
         result = None
 
+        # Automatic context
+        suffix = 0
+        base = context
+        while self.unit_set.filter(context=context, source=source).exists():
+            suffix += 1
+            context = f"{base}{suffix}"
+
         for translation in translations:
             is_source = translation.is_source
             kwargs = {}
@@ -1198,6 +1207,7 @@ class Translation(
             if is_source:
                 current_target = source
                 kwargs["extra_flags"] = extra_flags
+                kwargs["explanation"] = explanation
             else:
                 current_target = target
             if current_target is None:
@@ -1215,6 +1225,16 @@ class Translation(
             if not self.is_source and is_source:
                 try:
                     unit = translation.unit_set.get(id_hash=id_hash)
+                    flags = Flags(unit.extra_flags)
+                    flags.merge(extra_flags)
+                    new_flags = flags.format()
+                    if unit.extra_flags != new_flags or unit.explanation != explanation:
+                        unit.extra_flags = new_flags
+                        unit.explanation = explanation
+                        unit.save(
+                            update_fields=["extra_flags", "explanation"],
+                            same_content=True,
+                        )
                 except Unit.DoesNotExist:
                     pass
             if unit is None:
@@ -1244,8 +1264,6 @@ class Translation(
             if translation == self:
                 result = unit
 
-        if self.is_source:
-            component.sync_terminology()
         if not is_batch_update:
             component.update_variants()
             component.sync_terminology()
@@ -1287,17 +1305,23 @@ class Translation(
             # Unit is already present
             self.add_unit(None, source.context, source.get_source_plurals(), "")
 
-    def validate_new_unit_data(
+    def validate_new_unit_data(  # noqa: C901
         self,
         context: str,
         source: Union[str, List[str]],
         target: Optional[Union[str, List[str]]] = None,
+        auto_context: bool = False,
         extra_flags: Optional[str] = None,
+        explanation: str = "",
     ):
         extra = {}
+        if isinstance(source, str):
+            source = [source]
+        if isinstance(target, str):
+            target = [target]
         if not self.component.has_template():
             extra["source"] = join_plural(source)
-        if self.unit_set.filter(context=context, **extra).exists():
+        if not auto_context and self.unit_set.filter(context=context, **extra).exists():
             raise ValidationError(_("This string seems to already exist."))
         # Avoid using source translations without a filename
         if not self.filename:
@@ -1307,7 +1331,14 @@ class Translation(
                 raise ValidationError(
                     _("Failed adding string: %s") % _("No translation found.")
                 )
-            translation.validate_new_unit_data(context, source, target)
+            translation.validate_new_unit_data(
+                context,
+                source,
+                target,
+                auto_context=auto_context,
+                extra_flags=extra_flags,
+                explanation=explanation,
+            )
             return
         # Always load a new copy of store
         store = self.load_store()

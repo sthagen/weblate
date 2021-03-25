@@ -129,13 +129,7 @@ class UnitQuerySet(FastDeleteQuerySetMixin, models.QuerySet):
 
     def prefetch_bulk(self):
         """Prefetch useful for bulk editing."""
-        return (
-            self.prefetch()
-            .prefetch_full()
-            .prefetch_related(
-                "defined_variants",
-            )
-        )
+        return self.prefetch_full().prefetch_related("defined_variants")
 
     def prefetch_recent_content_changes(self):
         """
@@ -477,7 +471,7 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         ):
             # We can not exclude current unit here as we need to trigger
             # the updates below
-            for unit in self.unit_set.prefetch_bulk():
+            for unit in self.unit_set.prefetch().prefetch_bulk():
                 unit.update_state()
                 unit.update_priority()
                 unit.run_checks()
@@ -495,8 +489,9 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         flags = self.all_flags
         new_variant = None
         remove = False
+
         if not flags.has_value("variant"):
-            remove = True
+            remove = bool(variants)
         else:
             new_variant = flags.get_value("variant")
             if any(variant.key != new_variant for variant in variants):
@@ -865,7 +860,9 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
             was_propagated = self.propagate(user, change_action, author=author)
 
         changed = (
-            self.old_unit.state == self.state and self.old_unit.target == self.target
+            self.old_unit.state == self.state
+            and self.old_unit.target == self.target
+            and self.old_unit.explanation == self.explanation
         )
         # Return if there was no change
         # We have to explicitly check for fuzzy flag change on monolingual
@@ -873,7 +870,7 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         if changed and not was_propagated:
             return False
 
-        update_fields = ["target", "state", "original_state", "pending"]
+        update_fields = ["target", "state", "original_state", "pending", "explanation"]
         if self.is_source and not self.translation.component.intermediate:
             self.source = self.target
             update_fields.extend(["source"])
@@ -921,7 +918,7 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         This is needed when editing template translation for monolingual formats.
         """
         # Find relevant units
-        for unit in self.unit_set.exclude(id=self.id).prefetch_bulk():
+        for unit in self.unit_set.exclude(id=self.id).prefetch().prefetch_bulk():
             # Update source and number of words
             unit.source = self.target
             unit.num_words = self.num_words
