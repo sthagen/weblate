@@ -72,7 +72,7 @@ class StatsView(AboutView):
         totals = Profile.objects.aggregate(
             Sum("translated"), Sum("suggested"), Count("id")
         )
-        metrics = Metric.objects.get_current(Metric.SCOPE_GLOBAL, 0)
+        metrics = Metric.objects.get_current(None, Metric.SCOPE_GLOBAL, 0)
 
         context["total_translations"] = totals["translated__sum"]
         context["total_suggestions"] = totals["suggested__sum"]
@@ -80,15 +80,11 @@ class StatsView(AboutView):
         context["stats"] = stats
         context["metrics"] = metrics
 
-        top_translations = Profile.objects.order_by("-translated")[:10]
-        top_suggestions = Profile.objects.order_by("-suggested")[:10]
-        top_uploads = Profile.objects.order_by("-uploaded")[:10]
-        top_comments = Profile.objects.order_by("-commented")[:10]
-
-        context["top_translations"] = top_translations.select_related("user")
-        context["top_suggestions"] = top_suggestions.select_related("user")
-        context["top_uploads"] = top_uploads.select_related("user")
-        context["top_comments"] = top_comments.select_related("user")
+        context["top_users"] = (
+            Profile.objects.order_by("-translated")
+            .filter(user__is_active=True)[:10]
+            .select_related("user")
+        )
 
 
 class KeysView(AboutView):
