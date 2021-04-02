@@ -70,7 +70,7 @@
           {% endif %}
           <tr>
             <th>{% trans "Plural formula" %}</th>
-            <td colspan="2"><code>{{ plural.formula }}</code></td>
+            <td colspan="2" class="full-cell"><code>{{ plural.formula }}</code></td>
           </tr>
         {% endfor %}
       {% endif %}
@@ -263,9 +263,11 @@
       <thead>
       <tr>
       <td></td>
-      <th class="number">{% trans "Percent" %}</th>
+      <th class="number">{% trans "Strings percent" %}</th>
       <th class="number">{% trans "Hosted strings" context "Number of hosted strings" %}</th>
+      <th class="number">{% trans "Words percent" %}</th>
       <th class="number">{% trans "Hosted words" context "Number of hosted words" %}</th>
+      <th class="number">{% trans "Characters percent" %}</th>
       <th class="number">{% trans "Hosted characters" context "Number of hosted characters" %}</th>
       </tr>
       </thead>
@@ -274,28 +276,58 @@
       <th>{% trans "Total" %}</th>
       <td class="number"></td>
       <td class="number">{{ stats.all|intcomma }}</td>
+      <td class="number"></td>
       <td class="number">{{ stats.all_words|intcomma }}</td>
+      <td class="number"></td>
       <td class="number">{{ stats.all_chars|intcomma }}</td>
       </tr>
+      {% if show_source %}
+      <tr>
+      <th>{% trans "Source" %}</th>
+      <td class="number"></td>
+      <td class="number">{{ stats.source_strings|intcomma }}</td>
+      <td class="number"></td>
+      <td class="number">{{ stats.source_words|intcomma }}</td>
+      <td class="number"></td>
+      <td class="number">{{ stats.source_chars|intcomma }}</td>
+      </tr>
+      {% endif %}
+      {% if stats.approved %}
+      <tr>
+      <th>{% trans "Approved" %}</th>
+      <td class="number">{{ stats.approved_percent|percent_format }}</td>
+      <td class="number">{{ stats.approved|intcomma }}</td>
+      <td class="number">{{ stats.approved_words_percent|percent_format }}</td>
+      <td class="number">{{ stats.approved_words|intcomma }}</td>
+      <td class="number">{{ stats.approved_chars_percent|percent_format }}</td>
+      <td class="number">{{ stats.approved_chars|intcomma }}</td>
+      </tr>
+      {% endif %}
       <tr>
       <th>{% trans "Translated" %}</th>
       <td class="number">{{ stats.translated_percent|percent_format }}</td>
       <td class="number">{{ stats.translated|intcomma }}</td>
+      <td class="number">{{ stats.translated_words_percent|percent_format }}</td>
       <td class="number">{{ stats.translated_words|intcomma }}</td>
+      <td class="number">{{ stats.translated_chars_percent|percent_format }}</td>
       <td class="number">{{ stats.translated_chars|intcomma }}</td>
       </tr>
       <tr>
       <th>{% trans "Needs editing" %}</th>
       <td class="number">{{ stats.fuzzy_percent|percent_format }}</td>
       <td class="number">{{ stats.fuzzy|intcomma }}</td>
+      <td class="number">{{ stats.fuzzy_words_percent|percent_format }}</td>
       <td class="number">{{ stats.fuzzy_words|intcomma }}</td>
+      <td class="number">{{ stats.fuzzy_chars_percent|percent_format }}</td>
       <td class="number">{{ stats.fuzzy_chars|intcomma }}</td>
       </tr>
       <tr>
       <th>{% trans "Failing checks" %}</th>
       <td class="number">{{ stats.allchecks_percent|percent_format }}</td>
       <td class="number">{{ stats.allchecks|intcomma }}</td>
+      <td class="number">{{ stats.allchecks_words_percent|percent_format }}</td>
       <td class="number">{{ stats.allchecks_words|intcomma }}</td>
+      <td class="number">{{ stats.allchecks_chars_percent|percent_format }}</td>
       <td class="number">{{ stats.allchecks_chars|intcomma }}</td>
       </tr>
       </tbody>
@@ -310,25 +342,25 @@
           <div class="row">
             <div class="col-xs-3">
               <div class="metric">
-                <div class="metric-number">{{ metrics.projects|intcomma }}</div>
+                <div class="metric-number">{{ metrics.projects|number_format }}</div>
                 <div class="metric-text">{% trans "Projects" %}</div>
               </div>
             </div>
             <div class="col-xs-3">
               <div class="metric">
-                <div class="metric-number">{{ metrics.languages|intcomma }}</div>
+                <div class="metric-number">{{ metrics.languages|number_format }}</div>
                 <div class="metric-text">{% trans "Languages" %}</div>
               </div>
             </div>
             <div class="col-xs-3">
               <div class="metric">
-                <div class="metric-number">{{ metrics.components|intcomma }}</div>
+                <div class="metric-number">{{ metrics.components|number_format }}</div>
                 <div class="metric-text">{% trans "Components" %}</div>
               </div>
             </div>
             <div class="col-xs-3">
               <div class="metric">
-                <div class="metric-number">{{ metrics.users|intcomma }}</div>
+                <div class="metric-number">{{ metrics.users|number_format }}</div>
                 <div class="metric-text">{% trans "Users" %}</div>
               </div>
             </div>
@@ -381,13 +413,13 @@
         <div class="row">
           <div class="col-xs-3">
             <div class="metric">
-              <div class="metric-number">{{ metrics.all_words|intcomma }}</div>
+              <div class="metric-number">{{ metrics.all_words|number_format }}</div>
               <div class="metric-text">{% trans "Hosted words" context "Number of hosted words" %}</div>
             </div>
           </div>
           <div class="col-xs-3">
             <div class="metric">
-              <div class="metric-number">{{ metrics.all|intcomma }}</div>
+              <div class="metric-number">{{ metrics.all|number_format }}</div>
               <div class="metric-text">{% trans "Hosted strings" context "Number of hosted strings" %}</div>
             </div>
           </div>
@@ -399,7 +431,7 @@
           </div>
           <div class="col-xs-3">
             <div class="metric">
-              <div class="metric-number">{{ metrics.contributors|intcomma }}</div>
+              <div class="metric-number">{{ metrics.contributors|number_format }}</div>
               <div class="metric-text">{% trans "Contributors" %}</div>
             </div>
           </div>

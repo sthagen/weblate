@@ -55,10 +55,10 @@ class MetricsWrapper:
 
     @property
     def contributors(self):
-        return self.current["contributors"]
+        return self.current.get("contributors", 0)
 
     def calculate_trend_percent(self, key, modkey, base: Dict, origin: Dict):
-        total = base[key]
+        total = base.get(key, 0)
         if not total:
             return 0
         divisor = base[modkey]
@@ -77,7 +77,7 @@ class MetricsWrapper:
         return total - past
 
     def calculate_trend(self, key, base: Dict, origin: Dict):
-        total = base[key]
+        total = base.get(key, 0)
         if not total:
             return 0
         return 100 * (total - origin[key]) / total
