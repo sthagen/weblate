@@ -633,15 +633,6 @@ legend {
   max-height: 15em;
 }
 
-.activity-graph {
-  text-align: center;
-}
-
-.activity-graph img {
-  width: 100%;
-  max-width: 1000px;
-}
-
 .search-results {
   height: 20em;
   overflow-y: auto;
@@ -1733,4 +1724,11 @@ a.language:hover {
 }
 .trend-down {
   border-top: 6px solid #f6664c;
+}
+.table-activity td {
+  text-align: center;
+}
+.table-activity .activity-names td {
+  border-top: none;
+  padding-top: 0;
 }
