@@ -24,8 +24,8 @@ msgstr ""
 "Project-Id-Version: Weblate 4.6\n"
 "Report-Msgid-Bugs-To: https://github.com/WeblateOrg/weblate/issues\n"
 "POT-Creation-Date: 2021-04-03 12:06+0000\n"
-"PO-Revision-Date: 2021-04-03 10:53+0000\n"
-"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"PO-Revision-Date: 2021-04-04 19:58+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "weblate/application/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -3042,18 +3042,16 @@ msgid "RC file"
 msgstr "Arquivo RC"
 
 #: weblate/formats/convert.py:415
-#, fuzzy
-#| msgid "i18next JSON file"
 msgid "Plain text file"
-msgstr "Arquivo JSON i18next"
+msgstr "Arquivo texto simples"
 
 #: weblate/formats/convert.py:458
 msgid "DokuWiki text file"
-msgstr ""
+msgstr "Arquivo texto DokuWiki"
 
 #: weblate/formats/convert.py:465
 msgid "MediaWiki text file"
-msgstr ""
+msgstr "Arquivo texto MediaWiki"
 
 #: weblate/formats/exporters.py:204
 msgid "gettext PO"
@@ -3729,76 +3727,62 @@ msgstr "Arquivo processado, as entradas aparecerão em instantes."
 #: weblate/metrics/wrapper.py:31
 msgctxt "Short name of month"
 msgid "Jan"
-msgstr ""
+msgstr "Jan"
 
 #: weblate/metrics/wrapper.py:32
-#, fuzzy
-#| msgctxt "Plural form description"
-#| msgid "Few"
 msgctxt "Short name of month"
 msgid "Feb"
-msgstr "Alguns"
+msgstr "Fev"
 
 #: weblate/metrics/wrapper.py:33
-#, fuzzy
-#| msgid "Mari"
 msgctxt "Short name of month"
 msgid "Mar"
-msgstr "Mari"
+msgstr "Mar"
 
 #: weblate/metrics/wrapper.py:34
 msgctxt "Short name of month"
 msgid "Apr"
-msgstr ""
+msgstr "Abr"
 
 #: weblate/metrics/wrapper.py:35
-#, fuzzy
-#| msgctxt "Plural form description"
-#| msgid "Many"
 msgctxt "Short name of month"
 msgid "May"
-msgstr "Muitos"
+msgstr "Maio"
 
 #: weblate/metrics/wrapper.py:36
-#, fuzzy
-#| msgid "Gun"
 msgctxt "Short name of month"
 msgid "Jun"
-msgstr "Fon"
+msgstr "Jun"
 
 #: weblate/metrics/wrapper.py:37
 msgctxt "Short name of month"
 msgid "Jul"
-msgstr ""
+msgstr "Jul"
 
 #: weblate/metrics/wrapper.py:38
 msgctxt "Short name of month"
 msgid "Aug"
-msgstr ""
+msgstr "Ago"
 
 #: weblate/metrics/wrapper.py:39
-#, fuzzy
-#| msgid "Set up"
 msgctxt "Short name of month"
 msgid "Sep"
-msgstr "Configurar"
+msgstr "Set"
 
 #: weblate/metrics/wrapper.py:40
-#, fuzzy
-#| msgid "Object"
 msgctxt "Short name of month"
 msgid "Oct"
-msgstr "Objeto"
+msgstr "Out"
 
 #: weblate/metrics/wrapper.py:41
 msgctxt "Short name of month"
 msgid "Nov"
-msgstr ""
+msgstr "Nov"
 
 #: weblate/metrics/wrapper.py:42
 msgctxt "Short name of month"
 msgid "Dec"
-msgstr ""
+msgstr "Dez"
 
 #: weblate/screenshots/models.py:53
 #: weblate/templates/screenshots/screenshot_list.html:37
@@ -7733,27 +7717,21 @@ msgid "Last year"
 msgstr "Ano passado"
 
 #: weblate/templates/snippets/activity.html:14
-#, fuzzy
-#| msgid "Previous"
 msgctxt "Previous year"
 msgid "Previous"
 msgstr "Anterior"
 
 #: weblate/templates/snippets/activity.html:16
-#, fuzzy
-#| msgid "Activity in last 30 days"
 msgid "Activity in last 12 months"
-msgstr "Atividade nos últimos 30 dias"
+msgstr "Atividade nos últimos 12 meses"
 
 #: weblate/templates/snippets/activity.html:24
 #: weblate/templates/snippets/activity.html:29
-#, fuzzy, python-format
-#| msgid "%(count)s hour ago"
-#| msgid_plural "%(count)s hours ago"
+#, python-format
 msgid "%(count)s change"
 msgid_plural "%(count)s changes"
-msgstr[0] "%(count)s hora atrás"
-msgstr[1] "%(count)s horas atrás"
+msgstr[0] "%(count)s alteração"
+msgstr[1] "%(count)s alterações"
 
 #: weblate/templates/snippets/billing-failure.html:10
 msgid "This might be caused by missing subscription."
@@ -7973,22 +7951,16 @@ msgid "Most active translators"
 msgstr "Tradutores mais ativos"
 
 #: weblate/templates/snippets/info.html:255
-#, fuzzy
-#| msgid "Browse all languages"
 msgid "Browse all users"
-msgstr "Visualizar todos idiomas"
+msgstr "Visualizar todos usuários"
 
 #: weblate/templates/snippets/info.html:261
-#, fuzzy
-#| msgid "Strings status"
 msgid "String statistics"
-msgstr "Status do texto"
+msgstr "Estatísticas de textos"
 
 #: weblate/templates/snippets/info.html:266
-#, fuzzy
-#| msgid "String has comment"
 msgid "Strings percent"
-msgstr "Texto tem comentário"
+msgstr "Porcentagem de textos"
 
 #: weblate/templates/snippets/info.html:267
 #: weblate/templates/snippets/info.html:424
@@ -7998,10 +7970,8 @@ msgid "Hosted strings"
 msgstr "Textos hospedados"
 
 #: weblate/templates/snippets/info.html:268
-#, fuzzy
-#| msgid "Word count"
 msgid "Words percent"
-msgstr "Contagem de palavras"
+msgstr "Porcentagem de palavras"
 
 #: weblate/templates/snippets/info.html:269
 #: weblate/templates/snippets/info.html:418
@@ -8012,7 +7982,7 @@ msgstr "Palavras hospedadas"
 
 #: weblate/templates/snippets/info.html:270
 msgid "Characters percent"
-msgstr ""
+msgstr "Porcentagem de caracteres"
 
 #: weblate/templates/snippets/info.html:271
 msgctxt "Number of hosted characters"
@@ -8027,32 +7997,26 @@ msgstr "Fonte"
 
 #: weblate/templates/snippets/info.html:341
 msgid "Global numbers"
-msgstr ""
+msgstr "Números globais"
 
 #: weblate/templates/snippets/info.html:373
 #: weblate/templates/snippets/info.html:444
-#, fuzzy
-#| msgid "Last 30 days"
 msgid "and previous 30 days"
-msgstr "Últimos 30 dias"
+msgstr "e 30 dias anteriores"
 
 #: weblate/templates/snippets/info.html:374
 #: weblate/templates/snippets/info.html:445
-#, fuzzy
-#| msgid "Last 30 days"
 msgid "Trends of last 30 days"
-msgstr "Últimos 30 dias"
+msgstr "Tendências dos últimos 30 dias"
 
 #: weblate/templates/snippets/info.html:412
 msgid "Quick numbers"
-msgstr ""
+msgstr "Números rápidos"
 
 #: weblate/templates/snippets/info.html:436
 #: weblate/templates/snippets/info.html:473
-#, fuzzy
-#| msgid "Contributor stats"
 msgid "Contributors"
-msgstr "Estatísticas do colaborador"
+msgstr "Colaboradores"
 
 #: weblate/templates/snippets/labels_description.html:7
 #, python-format
@@ -9416,20 +9380,18 @@ msgid "pending"
 msgstr "pendente"
 
 #: weblate/templates/translate.html:725
-#, fuzzy
-#| msgid "Check flags"
 msgid "Inherited flags"
-msgstr "Marcadores de verificação"
+msgstr "Marcadores herdados"
 
 #: weblate/templates/translate.html:731
 #, python-format
 msgid "<code>%(flags)s</code> was extracted from %(filename)s."
-msgstr ""
+msgstr "<code>%(flags)s</code> foi extraído de %(filename)s."
 
 #: weblate/templates/translate.html:736 weblate/templates/translate.html:741
 #, python-format
 msgid "<code>%(flags)s</code> is inherited from %(object)s."
-msgstr ""
+msgstr "<code>%(flags)s</code> é herdado de %(object)s."
 
 #: weblate/templates/translate.html:767
 #, python-format

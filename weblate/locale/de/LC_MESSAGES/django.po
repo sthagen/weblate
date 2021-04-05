@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # ssantos <ssantos@web.de>, 2018, 2019.
 # Allan Nordhøy <epost@anotheragency.no>, 2018, 2019.
-# C. Rüdinger <Mail-an-CR@web.de>, 2018, 2019, 2020.
+# C. Rüdinger <Mail-an-CR@web.de>, 2018, 2019, 2020, 2021.
 # Ettore Atalan <atalanttore@googlemail.com>, 2018.
 # Krombel <krombel@krombel.de>, 2018.
 # nautilusx <mail.ka@mailbox.org>, 2018, 2019, 2020.
@@ -30,13 +30,14 @@
 # reloxx13 <reloxx@interia.pl>, 2020.
 # Mirian Margiani <mixosaurus+weblate@pm.me>, 2021.
 # Lübbe Onken <luebbe.opensource@gmail.com>, 2021.
+# Christian Eichert <c@zp1.net>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: Weblate 4.6\n"
 "Report-Msgid-Bugs-To: https://github.com/WeblateOrg/weblate/issues\n"
 "POT-Creation-Date: 2021-04-03 12:06+0000\n"
-"PO-Revision-Date: 2021-03-25 17:38+0000\n"
-"Last-Translator: nautilusx <translate@disroot.org>\n"
+"PO-Revision-Date: 2021-04-04 19:11+0000\n"
+"Last-Translator: Christian Eichert <c@zp1.net>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/weblate/"
 "application/de/>\n"
 "Language: de\n"
@@ -44,7 +45,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2-dev\n"
+"X-Generator: Weblate 4.6-dev\n"
 
 #: weblate/accounts/avatar.py:103
 msgctxt "No known user"
@@ -2274,7 +2275,7 @@ msgstr ""
 
 #: weblate/billing/models.py:156 weblate/templates/billing/detail.html:21
 msgid "Billing plan"
-msgstr "Abrechnungstarif"
+msgstr "Abrechnungsmodell"
 
 #: weblate/billing/models.py:159
 msgid "Billed projects"
@@ -2407,9 +2408,7 @@ msgstr "Zeilenumbruch am Ende"
 
 #: weblate/checks/chars.py:58
 msgid "Source and translation do not both end with a newline"
-msgstr ""
-"Ausgangs- und übersetzte Zeichenkette enden beide nicht mit einem "
-"Zeilenumbruch"
+msgstr "Quelle und Übersetzung enden nicht beide mit einem Zeilenumbruch"
 
 #: weblate/checks/chars.py:68
 msgid "Starting spaces"
@@ -3126,18 +3125,16 @@ msgid "RC file"
 msgstr "RC-Datei"
 
 #: weblate/formats/convert.py:415
-#, fuzzy
-#| msgid "i18next JSON file"
 msgid "Plain text file"
-msgstr "i18next-JSON-Datei"
+msgstr "Klartextdatei"
 
 #: weblate/formats/convert.py:458
 msgid "DokuWiki text file"
-msgstr ""
+msgstr "DokuWiki-Textdatei"
 
 #: weblate/formats/convert.py:465
 msgid "MediaWiki text file"
-msgstr ""
+msgstr "MediaWiki-Textdatei"
 
 #: weblate/formats/exporters.py:204
 msgid "gettext PO"
@@ -3819,80 +3816,62 @@ msgstr "Datei verarbeitet, die Einträge erscheinen in Kürze."
 #: weblate/metrics/wrapper.py:31
 msgctxt "Short name of month"
 msgid "Jan"
-msgstr ""
+msgstr "Jan"
 
 #: weblate/metrics/wrapper.py:32
-#, fuzzy
-#| msgctxt "Plural form description"
-#| msgid "Few"
 msgctxt "Short name of month"
 msgid "Feb"
-msgstr "Einige"
+msgstr "Feb"
 
 #: weblate/metrics/wrapper.py:33
-#, fuzzy
-#| msgid "Mari"
 msgctxt "Short name of month"
 msgid "Mar"
-msgstr "Mari"
+msgstr "Mär"
 
 #: weblate/metrics/wrapper.py:34
 msgctxt "Short name of month"
 msgid "Apr"
-msgstr ""
+msgstr "Apr"
 
 #: weblate/metrics/wrapper.py:35
-#, fuzzy
-#| msgctxt "Plural form description"
-#| msgid "Many"
 msgctxt "Short name of month"
 msgid "May"
-msgstr "Viele"
+msgstr "Mai"
 
 #: weblate/metrics/wrapper.py:36
-#, fuzzy
-#| msgid "Gun"
 msgctxt "Short name of month"
 msgid "Jun"
-msgstr "Gun"
+msgstr "Jun"
 
 #: weblate/metrics/wrapper.py:37
-#, fuzzy
-#| msgid "Jju"
 msgctxt "Short name of month"
 msgid "Jul"
-msgstr "Jju"
+msgstr "Jul"
 
 #: weblate/metrics/wrapper.py:38
-#, fuzzy
-#| msgid "Asu"
 msgctxt "Short name of month"
 msgid "Aug"
-msgstr "Asu"
+msgstr "Aug"
 
 #: weblate/metrics/wrapper.py:39
-#, fuzzy
-#| msgid "Set up"
 msgctxt "Short name of month"
 msgid "Sep"
-msgstr "Einrichtung"
+msgstr "Sep"
 
 #: weblate/metrics/wrapper.py:40
-#, fuzzy
-#| msgid "Object"
 msgctxt "Short name of month"
 msgid "Oct"
-msgstr "Objekt"
+msgstr "Okt"
 
 #: weblate/metrics/wrapper.py:41
 msgctxt "Short name of month"
 msgid "Nov"
-msgstr ""
+msgstr "Nov"
 
 #: weblate/metrics/wrapper.py:42
 msgctxt "Short name of month"
 msgid "Dec"
-msgstr ""
+msgstr "Dez"
 
 #: weblate/screenshots/models.py:53
 #: weblate/templates/screenshots/screenshot_list.html:37
@@ -5272,7 +5251,7 @@ msgstr ""
 
 #: weblate/templates/billing/detail.html:52
 msgid "Terminate billing plan"
-msgstr "Abrechnungsplan beenden"
+msgstr "Fakturierungsplan kündigen"
 
 #: weblate/templates/billing/detail.html:63
 msgid "Invoices"
@@ -5795,7 +5774,7 @@ msgstr "Erschienen %(first)s, zuletzt gesehen %(last)s"
 #: weblate/templates/manage/performance.html:42
 #: weblate/templates/translate.html:470
 msgid "Dismiss"
-msgstr "Verwerfen"
+msgstr "Ablehnen"
 
 #: weblate/templates/component.html:170
 msgid "Please sign in to see the alerts."
@@ -5828,7 +5807,7 @@ msgstr "Übernehmen"
 
 #: weblate/templates/component.html:225 weblate/templates/translate.html:359
 msgid "Browse all component changes"
-msgstr "Alle Komponenten-Änderungen durchsuchen"
+msgstr "Alle Komponentenänderungen durchsuchen"
 
 #: weblate/templates/component.html:239
 msgid ""
@@ -6521,7 +6500,7 @@ msgstr "Aktualisieren"
 
 #: weblate/templates/js/git-status.html:63
 msgid "Pull changes from the remote repository"
-msgstr "Pull der Änderungen aus dem entfernten Repository durchführen"
+msgstr "Änderungen aus der entfernten Paketquelle abrufen"
 
 #: weblate/templates/js/git-status.html:63
 msgid "Pull"
@@ -6783,12 +6762,12 @@ msgid ""
 "Your billing plan has expired, if you want to continue using the service, "
 "please renew it."
 msgstr ""
-"Ihr Abrechnungsplan ist abgelaufen. Wenn Sie den Service weiterhin nutzen "
-"möchten, erneuern Sie ihn bitte."
+"Ihr Abrechnungsmodell ist abgelaufen. Wenn Sie den Service weiterhin nutzen "
+"möchten, erneuern Sie es bitte."
 
 #: weblate/templates/mail/billing_expired.html:21
 msgid "This billing plan covers following projects:"
-msgstr "Dieser Abrechnungsplan umfasst folgende Projekte:"
+msgstr "Dieses Abrechnungsmodell umfasst folgende Projekte:"
 
 #: weblate/templates/mail/billing_expired.html:28
 msgid "Remove the project"
@@ -6797,7 +6776,7 @@ msgstr "Projekt entfernen"
 #: weblate/templates/mail/billing_expired.html:34
 msgid "All projects covered by this billing plan have been removed."
 msgstr ""
-"Alle Projekte, die unter diesen Abrechnungsplan fallen, wurden entfernt."
+"Alle Projekte, die unter dieses Abrechnungsmodell fallen, wurden entfernt."
 
 #: weblate/templates/mail/billing_expired.html:38
 #, python-format
@@ -6805,8 +6784,8 @@ msgid ""
 "If you don't perform the payment, all projects within this billing plan will "
 "be removed on %(date)s."
 msgstr ""
-"Wenn Sie die Zahlung nicht ausführen, werden alle Projekte innerhalb dieses "
-"Abrechnungsplans am %(date)s entfernt."
+"Wenn Sie keine Zahlung leisten, werden alle zu diesem Abrechnungsmodell "
+"gehörenden Projekte am %(date)s entfernt."
 
 #: weblate/templates/mail/billing_expired.html:40
 #, python-format
@@ -6831,7 +6810,7 @@ msgstr "Ihre Testphase läuft demnächst ab"
 
 #: weblate/templates/mail/billing_expired_subject.txt:9
 msgid "Your billing plan has expired"
-msgstr "Ihr Abrechnungsplan ist abgelaufen"
+msgstr "Ihr Abrechnungsmodell ist abgelaufen"
 
 #: weblate/templates/mail/changed_translation.html:14
 #: weblate/templates/mail/new_suggestion.html:14
@@ -7910,27 +7889,21 @@ msgid "Last year"
 msgstr "Letztes Jahr"
 
 #: weblate/templates/snippets/activity.html:14
-#, fuzzy
-#| msgid "Previous"
 msgctxt "Previous year"
 msgid "Previous"
-msgstr "Zurück"
+msgstr "Vorherige"
 
 #: weblate/templates/snippets/activity.html:16
-#, fuzzy
-#| msgid "Activity in last 30 days"
 msgid "Activity in last 12 months"
-msgstr "Aktivität in den letzten 30 Tagen"
+msgstr "Aktivität in den letzten 12 Monaten"
 
 #: weblate/templates/snippets/activity.html:24
 #: weblate/templates/snippets/activity.html:29
-#, fuzzy, python-format
-#| msgid "%(count)s hour ago"
-#| msgid_plural "%(count)s hours ago"
+#, python-format
 msgid "%(count)s change"
 msgid_plural "%(count)s changes"
-msgstr[0] "vor einer Stunde"
-msgstr[1] "vor %(count)s Stunden"
+msgstr[0] "%(count)s Änderung"
+msgstr[1] "%(count)s Änderungen"
 
 #: weblate/templates/snippets/billing-failure.html:10
 msgid "This might be caused by missing subscription."
@@ -8007,7 +7980,7 @@ msgstr "Letzter Remote-Commit"
 #: weblate/templates/snippets/git-info.html:34
 #, python-format
 msgid "%(author)s authored %(date)s"
-msgstr "Von %(author)s %(date)s verfasst"
+msgstr "%(author)s verfasst %(date)s"
 
 #: weblate/templates/snippets/git-info.html:43
 msgid "Weblate repository"
@@ -8152,22 +8125,16 @@ msgid "Most active translators"
 msgstr "Aktivste Übersetzer"
 
 #: weblate/templates/snippets/info.html:255
-#, fuzzy
-#| msgid "Browse all languages"
 msgid "Browse all users"
-msgstr "Alle Sprachen durchsuchen"
+msgstr "Alle Benutzer durchsuchen"
 
 #: weblate/templates/snippets/info.html:261
-#, fuzzy
-#| msgid "Strings status"
 msgid "String statistics"
-msgstr "Zeichenkettenstatus"
+msgstr "Zeichenfolgenstatistik"
 
 #: weblate/templates/snippets/info.html:266
-#, fuzzy
-#| msgid "String has comment"
 msgid "Strings percent"
-msgstr "Zeichenkette mit Kommentar"
+msgstr "Zeichenfolgen Prozent"
 
 #: weblate/templates/snippets/info.html:267
 #: weblate/templates/snippets/info.html:424
@@ -8177,10 +8144,8 @@ msgid "Hosted strings"
 msgstr "Gehostete Zeichenketten"
 
 #: weblate/templates/snippets/info.html:268
-#, fuzzy
-#| msgid "Word count"
 msgid "Words percent"
-msgstr "Wortanzahl"
+msgstr "Wörter Prozent"
 
 #: weblate/templates/snippets/info.html:269
 #: weblate/templates/snippets/info.html:418
@@ -8191,7 +8156,7 @@ msgstr "Gehostete Wörter"
 
 #: weblate/templates/snippets/info.html:270
 msgid "Characters percent"
-msgstr ""
+msgstr "Zeichen Prozent"
 
 #: weblate/templates/snippets/info.html:271
 msgctxt "Number of hosted characters"
@@ -8206,32 +8171,26 @@ msgstr "Ausgangszeichenkette"
 
 #: weblate/templates/snippets/info.html:341
 msgid "Global numbers"
-msgstr ""
+msgstr "Globale Zahlen"
 
 #: weblate/templates/snippets/info.html:373
 #: weblate/templates/snippets/info.html:444
-#, fuzzy
-#| msgid "Last 30 days"
 msgid "and previous 30 days"
-msgstr "Letzten 30 Tage"
+msgstr "und vorherige 30 Tage"
 
 #: weblate/templates/snippets/info.html:374
 #: weblate/templates/snippets/info.html:445
-#, fuzzy
-#| msgid "Last 30 days"
 msgid "Trends of last 30 days"
-msgstr "Letzten 30 Tage"
+msgstr "Trends der letzten 30 Tage"
 
 #: weblate/templates/snippets/info.html:412
 msgid "Quick numbers"
-msgstr ""
+msgstr "Schnelle Zahlen"
 
 #: weblate/templates/snippets/info.html:436
 #: weblate/templates/snippets/info.html:473
-#, fuzzy
-#| msgid "Contributor stats"
 msgid "Contributors"
-msgstr "Übersetzer-Statistik"
+msgstr "Mitwirkende"
 
 #: weblate/templates/snippets/labels_description.html:7
 #, python-format
@@ -9623,20 +9582,18 @@ msgid "pending"
 msgstr "ausstehend"
 
 #: weblate/templates/translate.html:725
-#, fuzzy
-#| msgid "Check flags"
 msgid "Inherited flags"
-msgstr "Prüfungs-Markierungen"
+msgstr "Vererbte Merker"
 
 #: weblate/templates/translate.html:731
 #, python-format
 msgid "<code>%(flags)s</code> was extracted from %(filename)s."
-msgstr ""
+msgstr "<code>%(flags)s</code> wurde aus %(filename)s entnommen."
 
 #: weblate/templates/translate.html:736 weblate/templates/translate.html:741
 #, python-format
 msgid "<code>%(flags)s</code> is inherited from %(object)s."
-msgstr ""
+msgstr "<code>%(flags)s</code> wird von %(object)s geerbt."
 
 #: weblate/templates/translate.html:767
 #, python-format
@@ -9735,7 +9692,7 @@ msgstr ""
 
 #: weblate/templates/translation.html:311
 msgid "Quick downloads"
-msgstr "Vorkonfigurierte Downloads"
+msgstr "Schnelle Downloads"
 
 #: weblate/templates/translation.html:318
 msgid "File in original format as translated in the repository"
@@ -11115,8 +11072,8 @@ msgid ""
 "URL of a repository, use weblate://project/component to share it with other "
 "component."
 msgstr ""
-"URL eines Repository; mit weblate://projektname/komponente verweisen Sie auf "
-"dieses Repository in einer anderen Komponente."
+"URL eines Repositorys, verwenden Sie weblate://project/component, um es für "
+"andere Komponenten freizugeben."
 
 #: weblate/trans/models/component.py:287
 msgid "Repository push URL"
