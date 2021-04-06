@@ -17,7 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from django.db.models import Count, Sum
+from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
@@ -69,22 +69,24 @@ class StatsView(AboutView):
 
         stats = GlobalStats()
 
-        totals = Profile.objects.aggregate(
-            Sum("translated"), Sum("suggested"), Count("id")
-        )
+        totals = Profile.objects.aggregate(Sum("translated"))
         metrics = Metric.objects.get_current(None, Metric.SCOPE_GLOBAL, 0)
 
         context["total_translations"] = totals["translated__sum"]
-        context["total_suggestions"] = totals["suggested__sum"]
-        context["total_users"] = totals["id__count"]
         context["stats"] = stats
         context["metrics"] = metrics
 
-        context["top_users"] = (
+        context["top_users"] = top_users = (
             Profile.objects.order_by("-translated")
             .filter(user__is_active=True)[:10]
             .select_related("user")
         )
+        translated_max = max(user.translated for user in top_users)
+        for user in top_users:
+            if translated_max:
+                user.translated_width = 100 * user.translated // translated_max
+            else:
+                user.translated_width = 0
 
 
 class KeysView(AboutView):
