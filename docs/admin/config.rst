@@ -235,7 +235,7 @@ BASIC_LANGUAGES
 .. versionadded:: 4.4
 
 List of languages to offer users for starting new translation. When not
-specified built in list is used which includes all commonly used languages, but
+specified built-in list is used which includes all commonly used languages, but
 without country specific variants.
 
 This only limits non privileged users to add unwanted languages. The project
@@ -352,6 +352,23 @@ Number of hours between committing pending changes by way of the background task
    :ref:`component-commit_pending_age`,
    :ref:`production-cron`,
    :djadmin:`commit_pending`
+
+
+.. setting:: CONTACT_FORM
+
+CONTACT_FORM
+------------
+
+.. versionadded:: 4.6
+
+Configures how e-mail from the contact form is being sent. Choose a
+configuration that matches your mail server configuration.
+
+``"reply-to"``
+   The sender is used in as :mailheader:`Reply-To`, this is the default behaviour.
+``"from"``
+   The sender is used in as :mailheader:`From`. Your mail server needs to allow
+   sending such e-mails.
 
 .. setting:: DATA_DIR
 

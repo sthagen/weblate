@@ -78,7 +78,14 @@ class Repository:
     def get_identifier(cls):
         return cls.identifier or cls.name.lower()
 
-    def __init__(self, path, branch=None, component=None, local=False):
+    def __init__(
+        self,
+        path: str,
+        branch: Optional[str] = None,
+        component=None,
+        local: bool = False,
+        skip_init: bool = False,
+    ):
         self.path = path
         if branch is None:
             self.branch = self.default_branch
@@ -91,7 +98,7 @@ class Repository:
         if not local:
             # Create ssh wrapper for possible use
             SSH_WRAPPER.create()
-            if not self.is_valid():
+            if not skip_init and not self.is_valid():
                 self.init()
 
     @classmethod
@@ -263,9 +270,10 @@ class Repository:
     @classmethod
     def clone(cls, source: str, target: str, branch: str, component=None):
         """Clone repository and return object for cloned repository."""
-        SSH_WRAPPER.create()
-        cls._clone(source, target, branch)
-        return cls(target, branch, component)
+        repo = cls(target, branch, component, skip_init=True)
+        with repo.lock:
+            cls._clone(source, target, branch)
+        return repo
 
     def update_remote(self):
         """Update remote repository."""

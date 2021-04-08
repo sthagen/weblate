@@ -9,6 +9,8 @@ Not yet released.
 * Added support for direct copying text from secondary languages.
 * Added date filtering when browsing changes.
 * Improved activity charts.
+* Sender for contact form e-mails can now be configured.
+* Improved parameters validation in component creation API.
 
 Weblate 4.5.3
 -------------
@@ -847,7 +849,7 @@ Released on October 6th 2018.
 * Added support for error reporting to Sentry.
 * Added support for automated daily update of repositories.
 * Added support for creating projects and components by users.
-* Built in translation memory now automatically stores translations done.
+* Built-in translation memory now automatically stores translations done.
 * Users and projects can import their existing translation memories.
 * Better management of related strings for screenshots.
 * Added support for checking Java MessageFormat.
@@ -929,7 +931,7 @@ Released on April 4th 2018.
 * Added support for HTML markup in whiteboard messages.
 * Added support for mass changing state of strings.
 * Translate-toolkit at least 2.3.0 is now required, older versions are no longer supported.
-* Added built in translation memory.
+* Added built-in translation memory.
 * Added componentlists overview to dashboard and per component list overview pages.
 * Added support for DeepL machine translation service.
 * Machine translation results are now cached inside Weblate.
@@ -958,7 +960,7 @@ Released on February 15th 2018.
 * Configuration errors are now stored and reported persistently.
 * Honor ignore flags in whitespace autofixer.
 * Improved compatibility with some Subversion setups.
-* Improved built in machine translation service.
+* Improved built-in machine translation service.
 * Added support for SAP Translation Hub service.
 * Added support for Microsoft Terminology service.
 * Removed support for advertisement in notification e-mails.

@@ -1140,6 +1140,16 @@ class ProjectAPITest(APIBaseTest):
         self.assertTrue(component.manage_units)
         self.assertTrue(response.data["manage_units"])
 
+    def test_create_component_blank_request(self):
+        self.do_request(
+            "api:project-components",
+            self.project_kwargs,
+            method="post",
+            code=400,
+            superuser=True,
+            request={},
+        )
+
     def test_create_component_no_format(self):
         repo_url = self.format_local_path(self.git_repo_path)
         response = self.do_request(
@@ -1282,6 +1292,35 @@ class ProjectAPITest(APIBaseTest):
         self.assertEqual(response.data["repo"], "local:")
         self.assertEqual(Component.objects.count(), 3)
 
+    def test_create_component_docfile_missing(self):
+        with open(TEST_DOC, "rb") as handle:
+            self.do_request(
+                "api:project-components",
+                self.project_kwargs,
+                method="post",
+                code=400,
+                superuser=True,
+                request={
+                    "docfile": handle,
+                    "file_format": "html",
+                    "new_lang": "add",
+                },
+            )
+        with open(TEST_DOC, "rb") as handle:
+            self.do_request(
+                "api:project-components",
+                self.project_kwargs,
+                method="post",
+                code=400,
+                superuser=True,
+                request={
+                    "docfile": handle,
+                    "name": "Local project",
+                    "slug": "local-project",
+                    "new_lang": "add",
+                },
+            )
+
     def test_create_component_docfile_json(self):
         with open(TEST_DOC, "rb") as handle:
             self.do_request(
@@ -1374,6 +1413,24 @@ class ProjectAPITest(APIBaseTest):
                     "slug": "local-project",
                     "filemask": "missing/*.po",
                     "file_format": "po",
+                    "new_lang": "none",
+                },
+            )
+        with open(TEST_PO, "rb") as handle:
+            self.do_request(
+                "api:project-components",
+                self.project_kwargs,
+                method="post",
+                code=400,
+                superuser=True,
+                request={
+                    "zipfile": handle,
+                    "name": "Local project",
+                    "slug": "local-project",
+                    "filemask": "*.po",
+                    "new_base": "project.pot",
+                    "file_format": "po",
+                    "push": "https://username:password@github.com/example/push.git",
                     "new_lang": "none",
                 },
             )
