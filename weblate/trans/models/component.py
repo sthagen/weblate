@@ -57,7 +57,7 @@ from weblate.trans.defines import (
     PROJECT_NAME_LENGTH,
     REPO_LENGTH,
 )
-from weblate.trans.exceptions import FileParseError
+from weblate.trans.exceptions import ComponentLockTimeout, FileParseError
 from weblate.trans.fields import RegexField
 from weblate.trans.mixins import CacheKeyMixin, PathMixin, URLMixin
 from weblate.trans.models.alert import ALERTS, ALERTS_IMPORT
@@ -144,10 +144,6 @@ LANGUAGE_CODE_STYLE_CHOICES = (
 MERGE_CHOICES = (("merge", gettext_lazy("Merge")), ("rebase", gettext_lazy("Rebase")))
 
 LOCKING_ALERTS = {"MergeFailure", "UpdateFailure", "PushFailure"}
-
-
-class ComponentLockTimeout(Exception):
-    """Component lock timeout."""
 
 
 def perform_on_link(func):
@@ -3072,3 +3068,17 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
         if self.is_glossary:
             return _("Add new glossary term")
         return _("Add new translation string")
+
+    def suggest_repo_link(self):
+        if self.is_repo_link or self.vcs == "local":
+            return None
+
+        same_repo = self.project.component_set.filter(
+            repo=self.repo, vcs=self.vcs, branch=self.branch
+        )
+        if self.push:
+            same_repo = same_repo.filter(push=self.push)
+        try:
+            return same_repo[0].get_repo_link_url()
+        except IndexError:
+            return None

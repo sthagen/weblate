@@ -36,7 +36,7 @@ from weblate.addons.models import Addon
 from weblate.auth.models import User, get_anonymous
 from weblate.lang.models import Language
 from weblate.trans.autotranslate import AutoTranslate
-from weblate.trans.exceptions import FileParseError
+from weblate.trans.exceptions import ComponentLockTimeout, FileParseError
 from weblate.trans.models import (
     Change,
     Comment,
@@ -325,30 +325,42 @@ def project_removal(pk, uid):
         return
 
 
-@app.task(trail=False)
+@app.task(
+    trail=False,
+    autoretry_for=(ComponentLockTimeout,),
+    retry_backoff=600,
+    retry_backoff_max=3600,
+)
 def auto_translate(
-    user_id,
-    translation_id,
-    mode,
-    filter_type,
-    auto_source,
-    component,
-    engines,
-    threshold,
+    user_id: int,
+    translation_id: int,
+    mode: str,
+    filter_type: str,
+    auto_source: str,
+    component: Optional[int],
+    engines: List[str],
+    threshold: int,
+    translation: Optional[Translation] = None,
+    component_wide: bool = False,
 ):
+    if translation is None:
+        translation = Translation.objects.get(pk=translation_id)
     if user_id:
         user = User.objects.get(pk=user_id)
     else:
         user = None
-    with override(user.profile.language if user else "en"):
-        translation = Translation.objects.get(pk=translation_id)
+    with translation.component.lock(), override(
+        user.profile.language if user else "en"
+    ):
         translation.log_info(
             "starting automatic translation %s: %s: %s",
             current_task.request.id,
             auto_source,
             ", ".join(engines) if engines else component,
         )
-        auto = AutoTranslate(user, translation, filter_type, mode)
+        auto = AutoTranslate(
+            user, translation, filter_type, mode, component_wide=component_wide
+        )
         if auto_source == "mt":
             auto.process_mt(engines, threshold)
         else:
@@ -367,6 +379,44 @@ def auto_translate(
                 % auto.updated
             )
         return {"translation": translation_id, "message": message}
+
+
+@app.task(
+    trail=False,
+    autoretry_for=(ComponentLockTimeout,),
+    retry_backoff=600,
+    retry_backoff_max=3600,
+)
+def auto_translate_component(
+    component_id: int,
+    mode: str,
+    filter_type: str,
+    auto_source: str,
+    component: Optional[int],
+    engines: List[str],
+    threshold: int,
+):
+    component = Component.objects.get(pk=component_id)
+
+    for translation in component.translation_set.iterator():
+        if translation.is_source:
+            continue
+
+        auto_translate(
+            None,
+            translation.pk,
+            mode,
+            filter_type,
+            auto_source,
+            component,
+            engines,
+            threshold,
+            translation=translation,
+            component_wide=True,
+        )
+    component.update_source_checks()
+    component.run_batched_checks()
+    return {"component": component.id}
 
 
 @app.task(trail=False)

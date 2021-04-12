@@ -611,6 +611,27 @@ Generic settings
 
    Configures :setting:`DEFAULT_AUTO_WATCH`.
 
+.. envvar:: WEBLATE_RATELIMIT_ATTEMPTS
+.. envvar:: WEBLATE_RATELIMIT_LOCKOUT
+.. envvar:: WEBLATE_RATELIMIT_WINDOW
+
+   .. versionadded:: 4.6
+
+   Configures rate limiter.
+
+   .. hint::
+
+      You can set configuration for any rate limiter scopes. To do that add ``WEBLATE_`` prefix to
+      any of setting described in :ref:`rate-limit`.
+
+   .. seealso::
+
+      :ref:`rate-limit`,
+      :setting:`RATELIMIT_ATTEMPTS`,
+      :setting:`RATELIMIT_WINDOW`,
+      :setting:`RATELIMIT_LOCKOUT`
+
+
 Machine translation settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

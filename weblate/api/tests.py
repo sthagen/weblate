@@ -17,6 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+import os
 from copy import copy
 from datetime import timedelta
 from io import BytesIO
@@ -1140,6 +1141,69 @@ class ProjectAPITest(APIBaseTest):
         self.assertTrue(component.manage_units)
         self.assertTrue(response.data["manage_units"])
 
+    def test_create_component_autoshare(self):
+        repo = self.component.repo
+        branch = self.component.branch
+        link_repo = self.component.get_repo_link_url()
+        response = self.do_request(
+            "api:project-components",
+            self.project_kwargs,
+            method="post",
+            code=201,
+            superuser=True,
+            request={
+                "name": "C 1",
+                "slug": "c-1",
+                "repo": repo,
+                "branch": branch,
+                "filemask": "po/*.po",
+                "file_format": "po",
+                "new_lang": "none",
+            },
+        )
+        self.assertEqual(response.data["repo"], repo)
+        component = Component.objects.get(slug="c-1")
+        self.assertEqual(component.repo, link_repo)
+        response = self.do_request(
+            "api:project-components",
+            self.project_kwargs,
+            method="post",
+            code=201,
+            superuser=True,
+            request={
+                "name": "C 2",
+                "slug": "c-2",
+                "repo": repo,
+                "branch": "translations",
+                "filemask": "translations/*.po",
+                "file_format": "po",
+                "new_lang": "none",
+            },
+        )
+        self.assertEqual(response.data["repo"], repo)
+        component = Component.objects.get(slug="c-2")
+        self.assertEqual(component.repo, repo)
+        response = self.do_request(
+            "api:project-components",
+            self.project_kwargs,
+            method="post",
+            code=201,
+            superuser=True,
+            request={
+                "name": "C 3",
+                "slug": "c-3",
+                "repo": repo,
+                "branch": branch,
+                "filemask": "po/*.po",
+                "file_format": "po",
+                "new_lang": "none",
+                "disable_autoshare": "1",
+            },
+        )
+        self.assertEqual(response.data["repo"], repo)
+        component = Component.objects.get(slug="c-3")
+        self.assertEqual(component.repo, repo)
+
     def test_create_component_blank_request(self):
         self.do_request(
             "api:project-components",
@@ -1186,9 +1250,10 @@ class ProjectAPITest(APIBaseTest):
             },
         )
         self.assertEqual(Component.objects.count(), 3)
+        # Auto linking in place
         self.assertEqual(
             Component.objects.get(slug="api-project", project__slug="test").repo,
-            repo_url,
+            "weblate://test/test",
         )
         self.assertEqual(response.data["repo"], repo_url)
 
@@ -1211,9 +1276,10 @@ class ProjectAPITest(APIBaseTest):
             },
         )
         self.assertEqual(Component.objects.count(), 3)
+        # Auto linking in place
         self.assertEqual(
             Component.objects.get(slug="api-project", project__slug="test").repo,
-            repo_url,
+            "weblate://test/test",
         )
         self.assertEqual(response.data["repo"], repo_url)
 
@@ -1434,6 +1500,38 @@ class ProjectAPITest(APIBaseTest):
                     "new_lang": "none",
                 },
             )
+
+    def test_create_component_overwrite(self):
+        translation = self.component.translation_set.get(language_code="cs")
+        trasnslation_filename = translation.get_filename()
+        self.assertTrue(os.path.exists(trasnslation_filename))
+        with open(TEST_PO, "rb") as handle:
+            self.do_request(
+                "api:project-components",
+                self.project_kwargs,
+                method="post",
+                code=400,
+                superuser=True,
+                request={
+                    "zipfile": handle,
+                    "name": "Local project",
+                    "slug": self.component.slug,
+                    "filemask": "*.po",
+                    "new_base": "project.pot",
+                    "file_format": "po",
+                    "push": "https://username:password@github.com/example/push.git",
+                    "new_lang": "none",
+                },
+            )
+        self.assertTrue(
+            os.path.exists(self.component.full_path),
+            f"File {self.component.full_path} does not exist",
+        )
+
+        self.assertTrue(
+            os.path.exists(trasnslation_filename),
+            f"File {trasnslation_filename} does not exist",
+        )
 
     def test_create_component_enforced(self):
         response = self.do_request(

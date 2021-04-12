@@ -56,7 +56,7 @@
       return false;
     });
     Mousetrap.bindGlobal("mod+o", function (e) {
-      $(".translation-item .copy-text").click();
+      $(".source-language-group [data-clone-text]").click();
       return false;
     });
     Mousetrap.bindGlobal("mod+y", function (e) {
@@ -148,6 +148,7 @@
       Cookies.set("translate-tab", $(this).attr("href"), {
         path: "/",
         expires: 365,
+        sameSite: "Lax",
       });
     });
 
