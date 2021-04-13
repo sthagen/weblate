@@ -571,10 +571,6 @@ kbd {
   background-color: #f9f9f9;
 }
 
-.zen-context {
-  padding: 0 1em;
-}
-
 #position-input-editable {
   padding: 2px 5px;
   max-width: 9em;
@@ -1744,6 +1740,12 @@ a.language:hover {
   width: 14px;
   height: 14px;
 }
+.full-edit-link path {
+  fill: #1fa385;
+}
+.full-edit-link:hover path {
+  fill: #144d3f !important;
+}
 .btn-sidebar {
   position: relative;
   left: 55px;
@@ -1761,4 +1763,10 @@ a.language:hover {
 .editor-click-select {
   background-color: #1fa385 !important;
   cursor: pointer;
+}
+.divisor {
+  color: #bfc3c8;
+}
+.source-comment {
+  font-weight: normal;
 }

@@ -603,7 +603,7 @@ def get_location_links(profile, unit):
             ret.append(escape(location))
         else:
             ret.append(SOURCE_LINK.format(escape(link), escape(location)))
-    return mark_safe("\n".join(ret))
+    return mark_safe('\n<span class="divisor">•</span>\n'.join(ret))
 
 
 @register.simple_tag(takes_context=True)
@@ -943,3 +943,8 @@ def render_alert(context, alert):
 @register.simple_tag
 def get_message_kind(tags):
     return get_message_kind_impl(tags)
+
+
+@register.simple_tag
+def any_unit_has_context(units):
+    return any(unit.context for unit in units)
