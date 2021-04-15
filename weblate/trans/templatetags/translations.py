@@ -48,7 +48,7 @@ from weblate.trans.models import (
     Translation,
 )
 from weblate.trans.models.translation import GhostTranslation
-from weblate.trans.util import get_state_css, split_plural
+from weblate.trans.util import split_plural, translation_percent
 from weblate.utils.docs import get_doc_url
 from weblate.utils.hash import hash_to_checksum
 from weblate.utils.markdown import render_markdown
@@ -75,7 +75,6 @@ NAME_MAPPING = {
 }
 
 FLAG_TEMPLATE = '<span title="{0}" class="{1}">{2}</span>'
-BADGE_TEMPLATE = '<span class="badge pull-right flip">{0}</span>'
 
 PERM_TEMPLATE = """
 <td>
@@ -513,66 +512,79 @@ def get_stats(obj):
     return obj.stats
 
 
-def translation_progress_data(readonly, approved, translated, fuzzy, checks):
+def translation_progress_data(
+    total: int, readonly: int, approved: int, translated: int
+):
+    translated -= approved
+    if approved:
+        approved += readonly
+        translated -= readonly
+    bad = total - approved - translated
     return {
-        "readonly": f"{readonly:.1f}",
-        "approved": f"{approved:.1f}",
-        "good": f"{max(translated - checks - approved - readonly, 0):.1f}",
-        "checks": f"{checks:.1f}",
-        "fuzzy": f"{fuzzy:.1f}",
-        "percent": f"{translated:.1f}",
+        "approved": f"{translation_percent(approved, total, False):.1f}",
+        "good": f"{translation_percent(translated, total):.1f}",
+        "bad": f"{translation_percent(bad, total, False):.1f}",
     }
 
 
-@register.inclusion_tag("progress.html")
+@register.inclusion_tag("snippets/progress.html")
 def translation_progress(obj):
     stats = get_stats(obj)
     return translation_progress_data(
-        stats.readonly_percent,
-        stats.approved_percent,
-        stats.translated_percent,
-        stats.fuzzy_percent,
-        stats.translated_checks_percent,
+        stats.all,
+        stats.readonly,
+        stats.approved,
+        stats.translated - stats.translated_checks,
     )
 
 
-@register.inclusion_tag("progress.html")
+@register.inclusion_tag("snippets/progress.html")
 def words_progress(obj):
     stats = get_stats(obj)
     return translation_progress_data(
-        stats.readonly_words_percent,
-        stats.approved_words_percent,
-        stats.translated_words_percent,
-        stats.fuzzy_words_percent,
-        stats.translated_checks_words_percent,
+        stats.all_words,
+        stats.readonly_words,
+        stats.approved_words,
+        stats.translated_words - stats.translated_checks_words,
     )
 
 
 @register.simple_tag
-def get_state_badge(unit):
-    """Return state badge."""
-    if unit.fuzzy:
-        flag = pgettext("String state", "Needs editing")
-    elif not unit.translated:
-        flag = pgettext("String state", "Not translated")
-    elif unit.approved:
-        flag = pgettext("String state", "Approved")
-    elif unit.translated:
-        flag = pgettext("String state", "Translated")
-    else:
-        return ""
-
-    return mark_safe(BADGE_TEMPLATE.format(flag))
-
-
-@register.inclusion_tag("snippets/unit-state.html")
-def get_state_flags(unit, detail=False):
+def unit_state_class(unit) -> str:
     """Return state flags."""
-    return {
-        "state": " ".join(get_state_css(unit)),
-        "unit": unit,
-        "detail": detail,
-    }
+    if unit.has_failing_check or not unit.translated:
+        return "unit-state-todo"
+    if unit.approved or (unit.readonly and unit.translation.enable_review):
+        return "unit-state-approved"
+    return "unit-state-translated"
+
+
+@register.simple_tag
+def unit_state_title(unit) -> str:
+    state = [unit.get_state_display()]
+    checks = unit.active_checks
+    if checks:
+        state.append(
+            "{} {}".format(
+                pgettext("String state", "Failed checks:"),
+                ", ".join(str(check) for check in checks),
+            )
+        )
+    checks = unit.dismissed_checks
+    if checks:
+        state.append(
+            "{} {}".format(
+                pgettext("String state", "Dismissed checks:"),
+                ", ".join(str(check) for check in checks),
+            )
+        )
+    if unit.has_comment:
+        state.append(pgettext("String state", "Commented"))
+    if unit.has_suggestion:
+        state.append(pgettext("String state", "Suggested"))
+    if "forbidden" in unit.all_flags:
+        state.append(gettext("This translation is forbidden."))
+    return "; ".join(state)
 
 
 @register.simple_tag

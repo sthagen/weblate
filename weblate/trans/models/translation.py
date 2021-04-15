@@ -663,8 +663,7 @@ class Translation(
                     pounit.set_target(unit.target)
 
             # Update fuzzy/approved flag
-            pounit.mark_fuzzy(unit.state == STATE_FUZZY)
-            pounit.mark_approved(unit.state == STATE_APPROVED)
+            pounit.set_state(unit.state)
 
             # Update comments as they might have been changed by state changes
             state = unit.get_unit_state(pounit, "")
@@ -730,7 +729,7 @@ class Translation(
         # All strings
         result.add(self.stats, "all", "")
 
-        result.add_if(self.stats, "readonly", "default")
+        result.add_if(self.stats, "readonly", "success")
 
         if not self.is_readonly:
             if self.enable_review:
@@ -741,7 +740,7 @@ class Translation(
 
             # To approve
             if self.enable_review:
-                result.add_if(self.stats, "unapproved", "dark")
+                result.add_if(self.stats, "unapproved", "success")
 
                 # Approved with suggestions
                 result.add_if(self.stats, "approved_suggestions", "info")
@@ -756,26 +755,26 @@ class Translation(
             result.add_if(self.stats, "fuzzy", "danger")
 
             # Translations with suggestions
-            result.add_if(self.stats, "suggestions", "dark")
-            result.add_if(self.stats, "nosuggestions", "dark")
+            result.add_if(self.stats, "suggestions", "danger")
+            result.add_if(self.stats, "nosuggestions", "danger")
 
         # All checks
-        result.add_if(self.stats, "allchecks", "warning")
+        result.add_if(self.stats, "allchecks", "danger")
 
         # Translated strings with checks
         if not self.is_source:
-            result.add_if(self.stats, "translated_checks", "warning")
+            result.add_if(self.stats, "translated_checks", "danger")
 
         # Dismissed checks
-        result.add_if(self.stats, "dismissed_checks", "warning")
+        result.add_if(self.stats, "dismissed_checks", "danger")
 
         # Process specific checks
         for check in CHECKS:
             check_obj = CHECKS[check]
-            result.add_if(self.stats, check_obj.url_id, "warning")
+            result.add_if(self.stats, check_obj.url_id, "danger")
 
         # Grab comments
-        result.add_if(self.stats, "comments", "dark")
+        result.add_if(self.stats, "comments", "")
 
         # Include labels
         labels = self.component.project.label_set.order_by("name")
