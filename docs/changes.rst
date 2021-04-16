@@ -1,7 +1,7 @@
 Weblate 4.6
 -----------
 
-Not yet released.
+Released on April 19th 2021.
 
 * The auto_translate management command has now a parameter for specifying translation mode.
 * Added support for :ref:`txt`.
@@ -20,6 +20,7 @@ Not yet released.
 * Simplified progress bars indicating translation status.
 * Renamed :ref:`addon-weblate.consistency.languages` to clarify the purpose.
 * Fixed saving string state to XLIFF.
+* Added language-wide search.
 
 `All changes in detail <https://github.com/WeblateOrg/weblate/milestone/61?closed=1>`__.
 
