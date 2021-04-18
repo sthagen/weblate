@@ -209,6 +209,34 @@ To reset `admin` password, restart the container with
         :envvar:`WEBLATE_ADMIN_NAME`,
         :envvar:`WEBLATE_ADMIN_EMAIL`
 
+Number of processes and memory consumption
+------------------------------------------
+
+The number of worker processes for both uWSGI and Celery is determined
+automatically based on number of CPUs. This works well for most cloud virtual
+machines as these typically have few CPUs and good amount of memory.
+
+In case you have a lot of CPU cores and hit out of memory issues, try reducing
+number of workers:
+
+.. code-block:: yaml
+
+    environment:
+      UWSGI_WORKERS: 4
+      CELERY_MAIN_OPTIONS: --concurrency 2
+      CELERY_NOTIFY_OPTIONS: --concurrency 1
+      CELERY_TRANSLATE_OPTIONS: --concurrency 1
+
+.. seealso::
+
+   :envvar:`CELERY_MAIN_OPTIONS`,
+   :envvar:`CELERY_NOTIFY_OPTIONS`,
+   :envvar:`CELERY_MEMORY_OPTIONS`,
+   :envvar:`CELERY_TRANSLATE_OPTIONS`,
+   :envvar:`CELERY_BACKUP_OPTIONS`,
+   :envvar:`CELERY_BEAT_OPTIONS`,
+   :envvar:`UWSGI_WORKERS`
+
 .. _docker-scaling:
 
 Scaling horizontally
@@ -227,7 +255,12 @@ volume should be separate for each container.
 
 Each Weblate container has defined role using :envvar:`WEBLATE_SERVICE`
 environment variable. Please follow carefully the documentation as some of the
-services should be running just once in the cluster.
+services should be running just once in the cluster and the ordering of the
+services matters as well.
+
+You can find example setup in the ``docker-compose`` repo as
+`docker-compose-split.yml
+<https://github.com/WeblateOrg/docker-compose/blob/main/docker-compose-split.yml>`__.
 
 .. _docker-environment:
 
@@ -1267,35 +1300,26 @@ Container settings
 
 .. envvar:: WEBLATE_SERVICE
 
-   Defines which services shoul be executed inside the container. Use this for :ref:`docker-scaling`.
+   Defines which services should be executed inside the container. Use this for :ref:`docker-scaling`.
 
    Following services are defined:
 
-   ``celery-backup``
-      Celery worker for backups, only one instance should be running.
    ``celery-beat``
       Celery task scheduler, only one instance should be running.
+      This container is also responsible for the database structure migrations
+      and it should be started prior others.
+   ``celery-backup``
+      Celery worker for backups, only one instance should be running.
    ``celery-celery``
       Generic Celery worker.
    ``celery-memory``
-      Trnaslation memory Celery worker.
+      Translation memory Celery worker.
    ``celery-notify``
       Notifications Celery worker.
    ``celery-translate``
       Automatic translation Celery worker.
    ``web``
       Web server.
-
-In case you have a lot of CPU cores and hit out of memory issues, try reducing
-number of workers:
-
-.. code-block:: yaml
-
-    environment:
-      UWSGI_WORKERS: 4
-      CELERY_MAIN_OPTIONS: --concurrency 2
-      CELERY_NOTIFY_OPTIONS: --concurrency 1
-      CELERY_TRANSLATE_OPTIONS: --concurrency 1
 
 
 .. _docker-volume:
@@ -1316,7 +1340,7 @@ configuration, but usually it is stored in
 container it is mounted as :file:`/app/data`.
 
 The cache volume is mounted as :file:`/app/cache` and is used to store static
-files. It's content is recreated on container startup and the volume can be
+files. Its content is recreated on container startup and the volume can be
 mounted using ephemeral filesystem such as `tmpfs`.
 
 .. seealso::
