@@ -2160,8 +2160,10 @@ Screenshots
     :param id: Screenshot ID
     :type id: int
 
-Addons
-++++++
+.. _addons-api:
+
+Add-ons
++++++++
 
 .. versionadded:: 4.4.1
 
@@ -2171,17 +2173,21 @@ Addons
 
     .. seealso::
 
-        Addon object attributes are documented at :http:get:`/api/addons/(int:id)/`.
+        Add-on object attributes are documented at :http:get:`/api/addons/(int:id)/`.
 
 .. http:get:: /api/addons/(int:id)/
 
     Returns information about addon information.
 
-    :param id: Addon ID
+    :param id: Add-on ID
     :type id: int
     :>json string name: name of an addon
     :>json string component: URL of a related component object
     :>json object configuration: Optional addon configuration
+
+    .. seealso::
+
+       :doc:`/admin/addons`
 
 .. http:post:: /api/components/(string:project)/(string:component)/addons/
 
@@ -2196,7 +2202,7 @@ Addons
 
     Edit partial information about addon.
 
-    :param id: Addon ID
+    :param id: Add-on ID
     :type id: int
     :>json object configuration: Optional addon configuration
 
@@ -2204,7 +2210,7 @@ Addons
 
     Edit full information about addon.
 
-    :param id: Addon ID
+    :param id: Add-on ID
     :type id: int
     :>json object configuration: Optional addon configuration
 
@@ -2212,7 +2218,7 @@ Addons
 
     Delete addon.
 
-    :param id: Addon ID
+    :param id: Add-on ID
     :type id: int
 
 

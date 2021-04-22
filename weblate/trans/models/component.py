@@ -792,12 +792,12 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
                 continue
 
             try:
-                addon = ADDONS[name]()
+                addon = ADDONS[name]
             except KeyError:
                 self.log_warning("could not enable addon %s, not found", name)
                 continue
 
-            if addon.has_settings:
+            if addon.has_settings():
                 form = addon.get_add_form(None, self, data=configuration)
                 if not form.is_valid():
                     self.log_warning(
@@ -1478,7 +1478,7 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
 
             # create translation objects for all files
             try:
-                self.create_translations(request=request)
+                self.create_translations(request=request, force=True)
                 return True
             except FileParseError:
                 return False
@@ -2536,6 +2536,16 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
 
             # Make sure all languages are present
             self.sync_terminology()
+
+            # Run automatically installed addons. They are run upon installation,
+            # but there are no translations created at that point.
+            processed = set()
+            for addons in self.addons_cache.values():
+                for addon in addons:
+                    if addon.id in processed:
+                        continue
+                    processed.add(addon.id)
+                    addon.addon.post_configure()
 
     def update_variants(self):
         from weblate.trans.models import Unit
