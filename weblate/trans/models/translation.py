@@ -1091,12 +1091,13 @@ class Translation(
 
             if method in ("translate", "fuzzy", "approve"):
                 # Merge on units level
-                with self.component.repository.lock:
+                with self.component.lock:
                     return self.merge_translations(
                         request, store, conflicts, method, fuzzy
                     )
             elif method == "add":
-                return self.handle_add_upload(request, store, fuzzy=fuzzy)
+                with self.component.lock:
+                    return self.handle_add_upload(request, store, fuzzy=fuzzy)
 
             # Add as sugestions
             return self.merge_suggestions(request, store, fuzzy)
