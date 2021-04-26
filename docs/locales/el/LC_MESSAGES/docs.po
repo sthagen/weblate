@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Weblate\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-20 13:26+0200\n"
-"PO-Revision-Date: 2021-04-13 09:14+0000\n"
-"Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
+"PO-Revision-Date: 2021-04-26 12:57+0000\n"
+"Last-Translator: Michalis <michalisntovas@yahoo.gr>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/weblate/"
 "documentation/el/>\n"
 "Language: el\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../admin/access.rst:4 ../../admin/projects.rst:180
@@ -1377,10 +1377,8 @@ msgid ""
 msgstr ""
 
 #: ../../admin/addons.rst:33
-#, fuzzy
-#| msgid "Your account has been removed."
 msgid "It is triggered:"
-msgstr "Ο λογαριασμός σας απομακρύνθηκε."
+msgstr "Ενεργοποιείται:"
 
 #: ../../admin/addons.rst:35
 #, fuzzy
@@ -1737,10 +1735,9 @@ msgid ""
 msgstr ""
 
 #: ../../admin/addons.rst:314
-#, fuzzy
-#| msgid "Base file for new translations"
 msgid "For example generating a summary file for each translation:"
-msgstr "Αρχείο Βάση για νέες μεταφράσεις"
+msgstr ""
+"Για παράδειγμα τη δημιουργία ενός περιληπτικού αρχείου για κάθε μετάφραση:"
 
 #: ../../admin/addons.rst:316
 msgid "Name of generated file"
@@ -1906,10 +1903,8 @@ msgid "``weblate.gettext.msgmerge``"
 msgstr ""
 
 #: ../../admin/addons.rst:467
-#, fuzzy
-#| msgid "Previous translation:"
 msgid "previous, no_location, fuzzy"
-msgstr "Προηγούμενη μετάφραση:"
+msgstr "previous, no_location, fuzzy"
 
 #: ../../admin/addons.rst:469
 msgid ""
@@ -1925,28 +1920,28 @@ msgid ""
 msgstr ""
 
 #: ../../admin/addons.rst:483
-#, fuzzy
-#| msgid "Push on commit"
 msgid "Squash Git commits"
-msgstr "Προώθηση πράξης"
+msgstr "Συμπίεση υποβολών στο Git"
 
 #: ../../admin/addons.rst:488
 msgid "``weblate.git.squash``"
-msgstr ""
+msgstr "``weblate.git.squash``"
 
 #: ../../admin/addons.rst:490
 msgid "squash, append_trailers, commit_message"
-msgstr ""
+msgstr "squash, append_trailers, commit_message"
 
 #: ../../admin/addons.rst:492
 msgid "Squash Git commits prior to pushing changes."
-msgstr ""
+msgstr "Συμπίεση των υποβολών στο Git πριν από την προώθησή τους."
 
 #: ../../admin/addons.rst:494
 msgid ""
 "Git commits can be squashed prior to pushing changes in one of the following "
 "modes:"
 msgstr ""
+"Οι υποβολές στο Git μπορούν να συμπιεστούν πριν από την προώθηση των αλλαγών "
+"με έναν από τους ακόλουθους τρόπους:"
 
 #: ../../admin/addons.rst:499
 msgid "All commits into one"
@@ -4687,10 +4682,8 @@ msgid ":doc:`checks` recalculation"
 msgstr ""
 
 #: ../../admin/config.rst:206
-#, fuzzy
-#| msgid "Possible configuration"
 msgid "Possible choices:"
-msgstr "Πιθανή ρύθμιση"
+msgstr "Πιθανές επιλογές:"
 
 #: ../../admin/config.rst:208
 msgid "``monthly`` (this is the default)"
@@ -13895,20 +13888,16 @@ msgstr ""
 
 #: ../../admin/projects.rst:189 ../../workflows.rst:75 ../../workflows.rst:107
 #: ../../workflows.rst:144
-#, fuzzy
-#| msgid "Enable suggestions"
 msgid "Enable reviews"
-msgstr "Ενεργοποίηση προτάσεων"
+msgstr "Ενεργοποίηση αναθεωρήσεων"
 
 #: ../../admin/projects.rst:191
 msgid "Enable review workflow for translations, see :ref:`reviews`."
 msgstr ""
 
 #: ../../admin/projects.rst:196
-#, fuzzy
-#| msgid "Enable suggestions"
 msgid "Enable source reviews"
-msgstr "Ενεργοποίηση προτάσεων"
+msgstr "Ενεργοποίηση αναθεωρήσεων της πηγής"
 
 #: ../../admin/projects.rst:198
 msgid "Enable review workflow for source strings, see :ref:`source-reviews`."
@@ -14137,7 +14126,7 @@ msgstr ""
 
 #: ../../admin/projects.rst:375
 msgid "Push branch"
-msgstr "Κλάδος ώθησης"
+msgstr "Κλάδος προώθησης"
 
 #: ../../admin/projects.rst:377
 msgid "Branch for pushing changes, leave empty to use :ref:`component-branch`."
@@ -14527,7 +14516,7 @@ msgstr ""
 
 #: ../../admin/projects.rst:656
 msgid "Push on commit"
-msgstr "Προώθηση πράξης"
+msgstr "Προώθηση κατά την υποβολή"
 
 #: ../../admin/projects.rst:658
 msgid ""
@@ -14539,7 +14528,7 @@ msgstr ""
 
 #: ../../admin/projects.rst:667
 msgid "Age of changes to commit"
-msgstr ""
+msgstr "Ηλικία των αλλαγών προς υποβολή"
 
 #: ../../admin/projects.rst:669
 msgid ""
@@ -14561,7 +14550,7 @@ msgstr ""
 
 #: ../../admin/projects.rst:684
 msgid "Lock on error"
-msgstr ""
+msgstr "Κλείδωμα σε σφάλμα"
 
 #: ../../admin/projects.rst:686
 msgid ""
@@ -14674,10 +14663,8 @@ msgid "``^[^.]+$``"
 msgstr ""
 
 #: ../../admin/projects.rst:743
-#, fuzzy
-#| msgid "E-mail regular expression"
 msgid "Variants regular expression"
-msgstr "Κανονική έκφραση ηλεκτρονικής αλληλογραφίας"
+msgstr "Κανονική έκφραση για παραλλαγές"
 
 #: ../../admin/projects.rst:745
 msgid ""
@@ -14736,10 +14723,8 @@ msgid ""
 msgstr ""
 
 #: ../../admin/projects.rst:789
-#, fuzzy
-#| msgid "Other projects"
 msgid "Share in projects"
-msgstr "Άλλα έργα"
+msgstr "Κοινή χρήση σε έργα"
 
 #: ../../admin/projects.rst:791
 msgid ""
@@ -14784,7 +14769,7 @@ msgstr "Όνομα περιεχομένου"
 
 #: ../../admin/projects.rst:823
 msgid "Glossary color"
-msgstr "Χρώμα γλωσσάριου"
+msgstr "Χρώμα γλωσσαρίου"
 
 #: ../../admin/projects.rst:825
 msgid "Display color for a glossary used when showing word matches."
@@ -17690,10 +17675,8 @@ msgid ""
 msgstr ""
 
 #: ../../api.rst:1962
-#, fuzzy
-#| msgid "Strings marked for review:"
 msgid "whether the unit is fuzzy or marked for review"
-msgstr "Κείμενα που επισημάνθηκαν για αξιολόγηση:"
+msgstr "εάν η μονάδα είναι ασαφής ή έχει επισημανθεί για αναθεώρηση"
 
 #: ../../api.rst:1963
 #, fuzzy
@@ -21217,7 +21200,7 @@ msgstr ""
 
 #: ../../changes.rst:828
 msgid "New add-on to squash commits prior to push."
-msgstr ""
+msgstr "Νέο πρόσθετο για τη συμπίεση υποβολών πριν από την προώθηση."
 
 #: ../../changes.rst:829
 msgid "Improved displaying of translation changes."
@@ -21511,10 +21494,10 @@ msgid "Removed support for soon shutdown libravatar service."
 msgstr ""
 
 #: ../../changes.rst:926
-#, fuzzy
-#| msgid "Flag unchanged translations as \"Needs editing\""
 msgid "New add-on to mark unchanged translations as needing edit."
-msgstr "Σημείωση αμετάβλητων μεταφράσεων ως \"Χρειάζεται επεξεργασία\""
+msgstr ""
+"Νέο πρόσθετο για την επισήμανση των αμετάβλητων μεταφράσεων ως \"Χρειάζεται "
+"επεξεργασία\"."
 
 #: ../../changes.rst:927
 msgid "Add support for jumping to specific location while translating."
@@ -28614,7 +28597,7 @@ msgstr ""
 #: ../../formats.rst:61 ../../formats.rst:63 ../../formats.rst:73
 #: ../../formats.rst:93 ../../formats.rst:105
 msgid "needs editing"
-msgstr ""
+msgstr "χρειάζεται επεξεργασία"
 
 #: ../../formats.rst:63
 msgid ":ref:`mono_gettext`"
@@ -28648,7 +28631,7 @@ msgstr ""
 
 #: ../../formats.rst:65
 msgid "needs editing, approved"
-msgstr ""
+msgstr "χρειάζεται επεξεργασία, εγκεκριμένο"
 
 #: ../../formats.rst:67
 msgid ":ref:`javaprop`"
@@ -33959,6 +33942,8 @@ msgid ""
 "Some addons can operate on multiple components sharing one repository, for "
 "example :ref:`addon-weblate.git.squash`."
 msgstr ""
+"Ορισμένα πρόσθετα μπορούν να λειτουργήσουν σε πολλά στοιχεία που μοιράζονται "
+"ένα αποθετήριο, για παράδειγμα :ref:`addon-weblate.git.squash`."
 
 #: ../../vcs.rst:154
 msgid "HTTPS repositories"
@@ -34027,7 +34012,7 @@ msgstr ""
 
 #: ../../vcs.rst:205
 msgid "Git with force push"
-msgstr ""
+msgstr "Git με εξαναγκασμένη προώθηση"
 
 #: ../../vcs.rst:207
 msgid ""
@@ -34719,7 +34704,7 @@ msgstr ""
 
 #: ../../workflows.rst:40
 msgid "Waiting for review"
-msgstr "Αναμονή για έλεγχο"
+msgstr "Αναμονή για αναθεώρηση"
 
 #: ../../workflows.rst:40
 msgid ""
