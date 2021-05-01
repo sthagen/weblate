@@ -1,9 +1,11 @@
-Weblate 4.7.1
--------------
+Weblate 4.7
+-----------
 
 Not yet released.
 
 * Improved configuration health check.
+* Added support for ``object-pascal-format`` used in gettext PO.
+* Renamed :guilabel:`Nearby keys` to :guilabel:`Similar keys` to better describe the purpose.
 
 Weblate 4.6.1
 -------------
@@ -17,6 +19,9 @@ Not yet released.
 * Fixed creating pull requests on Pagure.
 * Fixed triggering automatically installed add-ons.
 * Fixed possible caching issues on upgrade.
+* Fixed adding new units to monolingual translations using upload.
+
+`All changes in detail <https://github.com/WeblateOrg/weblate/milestone/65?closed=1>`__.
 
 Weblate 4.6
 -----------

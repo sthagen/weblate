@@ -1000,11 +1000,17 @@ class Translation(
         return (0, 0, self.unit_set.count(), len(list(store2.content_units)))
 
     def handle_add_upload(self, request, store, fuzzy: str = ""):
+        has_template = self.component.has_template()
         skipped = 0
         accepted = 0
-        existing = set(self.unit_set.values_list("context", "source"))
+        if has_template:
+            existing = set(self.unit_set.values_list("context", flat=True))
+        else:
+            existing = set(self.unit_set.values_list("context", "source"))
         for _set_fuzzy, unit in store.iterate_merge(fuzzy):
-            if (unit.context, unit.source) in existing:
+            if (has_template and unit.context in existing) or (
+                not has_template and (unit.context, unit.source) in existing
+            ):
                 skipped += 1
                 continue
             self.add_unit(
@@ -1071,11 +1077,20 @@ class Translation(
                 filecopy = filecopy[3:]
 
             # Load backend file
+            if method == "add" and self.is_template:
+                template_store = try_load(
+                    fileobj.name,
+                    filecopy,
+                    self.component.file_format_cls,
+                    None,
+                )
+            else:
+                template_store = self.component.template_store
             store = try_load(
                 fileobj.name,
                 filecopy,
                 self.component.file_format_cls,
-                self.component.template_store,
+                template_store,
             )
 
             # Check valid plural forms

@@ -35,6 +35,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy
 from git.config import GitConfigParser
 
+from weblate.utils.errors import report_error
 from weblate.utils.files import is_excluded, remove_tree
 from weblate.utils.render import render_template
 from weblate.utils.xml import parse_xml
@@ -71,7 +72,11 @@ class GitRepository(Repository):
     def get_remote_branch(cls, repo: str):
         if not repo:
             return super().get_remote_branch(repo)
-        result = cls._popen(["ls-remote", "--symref", repo, "HEAD"])
+        try:
+            result = cls._popen(["ls-remote", "--symref", repo, "HEAD"])
+        except RepositoryException:
+            report_error(cause="Listing remote branch")
+            return super().get_remote_branch(repo)
         for line in result.splitlines():
             if not line.startswith("ref: "):
                 continue
@@ -829,6 +834,17 @@ class GithubRepository(GitMergeRequestBase):
                 or "No commits between " in error_message
             ):
                 return
+
+            if "Validation Failed" in error_message:
+                for error in response["errors"]:
+                    if error.get("field") == "head":
+                        # This most likely indicates that Weblate repository has moved
+                        # and we should createa a fresh fork.
+                        self.create_fork(credentials)
+                        self.create_pull_request(
+                            credentials, origin_branch, fork_remote, fork_branch
+                        )
+                        return
 
             raise RepositoryException(0, f"Pull request failed: {error_message}")
 

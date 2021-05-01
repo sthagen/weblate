@@ -2,7 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Michal Čihař <michal@cihar.com>, 2019.
-# Janar Leas <janar.leas@gmail.com>, 2019.
+# Janar Leas <janar.leas@gmail.com>, 2019, 2021.
 # anonymous <noreply@weblate.org>, 2019, 2020.
 # Anonymous <noreply@weblate.org>, 2020.
 # Priit Jõerüüt <hwlate@joeruut.com>, 2020, 2021.
@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Weblate 4.7\n"
 "Report-Msgid-Bugs-To: https://github.com/WeblateOrg/weblate/issues\n"
-"POT-Creation-Date: 2021-04-20 11:25+0000\n"
-"PO-Revision-Date: 2021-04-17 23:27+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"POT-Creation-Date: 2021-04-30 11:30+0000\n"
+"PO-Revision-Date: 2021-04-27 18:32+0000\n"
+"Last-Translator: Priit Jõerüüt <hwlate@joeruut.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/weblate/"
 "application/et/>\n"
 "Language: et\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 4.7-dev\n"
 
 #: weblate/accounts/avatar.py:103
 msgctxt "No known user"
@@ -56,10 +56,9 @@ msgid "Public e-mail"
 msgstr "Avalik e-posti aadress"
 
 #: weblate/accounts/forms.py:287
-#, fuzzy, python-format
-#| msgid "Component list"
+#, python-format
 msgid "Component list: %s"
-msgstr "Komponentide nimekiri"
+msgstr "Osiste nimekiri: %s"
 
 #: weblate/accounts/forms.py:313 weblate/accounts/forms.py:381
 #: weblate/accounts/templatetags/authnames.py:42 weblate/auth/models.py:322
@@ -95,12 +94,12 @@ msgid ""
 "Please contact us in English, otherwise we might be unable to process your "
 "request."
 msgstr ""
-"Palun võtke meiega ühendust inglise keeles, muidu me ei pruugi teie palvet "
-"menetleda."
+"Palun võta meiega ühendust inglise keeles, muidu me ei pruugi mõista sinu "
+"teadet."
 
 #: weblate/accounts/forms.py:382
 msgid "Activation e-mail will be sent here."
-msgstr "Aktiveerimis e-kiri saadetakse sinna."
+msgstr "Aktiveerimise e-kiri saadetakse siia."
 
 #: weblate/accounts/forms.py:405
 msgid "Too many failed registration attempts from this location."
@@ -303,10 +302,8 @@ msgid "Screenshots uploaded"
 msgstr "Üleslaetud ekraanitõmmised"
 
 #: weblate/accounts/forms.py:808
-#, fuzzy
-#| msgid "Translation key"
 msgid "Chosen sorting is not supported."
-msgstr "Tõlke võti"
+msgstr "Valitud sortimisviis ei ole toetatud."
 
 #: weblate/accounts/models.py:144
 msgid "Password changed."
@@ -903,7 +900,7 @@ msgstr ""
 #: weblate/templates/accounts/login.html:39
 #: weblate/templates/accounts/redirect.html:7 weblate/templates/base.html:214
 msgid "Sign in"
-msgstr ""
+msgstr "Logi sisse"
 
 #: weblate/accounts/views.py:721 weblate/wladmin/sites.py:187
 msgid "Thank you for using Weblate."
@@ -936,10 +933,8 @@ msgid "Add another identity by confirming your e-mail address first."
 msgstr ""
 
 #: weblate/accounts/views.py:1128
-#, fuzzy
-#| msgid "Could not clean the repository on %s."
 msgid "Could not complete registration."
-msgstr "Ei saa puhastada %s varamut."
+msgstr "Registreerimist ei õnnestunud lõpetada."
 
 #: weblate/accounts/views.py:1131
 msgid "Please check if you have already registered an account."
@@ -1094,10 +1089,8 @@ msgid ""
 msgstr ""
 
 #: weblate/addons/example.py:36
-#, fuzzy
-#| msgid "Enable addon:"
 msgid "Example add-on"
-msgstr "Võta laiendus kasutusele:"
+msgstr "Näidislaiendus"
 
 #: weblate/addons/example.py:38
 msgid "This add-on does nothing it is just an example."
@@ -2155,10 +2148,8 @@ msgid ""
 msgstr ""
 
 #: weblate/auth/models.py:618
-#, fuzzy
-#| msgid "Regular expression used to match user e-mail."
 msgid "Regular expression for e-mail address"
-msgstr "Regulaaravaldis, mida pruugitakse kasutaja e-posti vastendamiseks."
+msgstr "Regulaaravaldis, mida pruugitakse e-posti aadressi vastendamiseks"
 
 #: weblate/auth/models.py:622
 msgid "Users with e-mail addresses found to match will be added to this group."
@@ -2616,169 +2607,181 @@ msgstr "Tõlketunnuse valed parameetrid: „%s“"
 msgid "Missing parameters for translation flag: \"%s\""
 msgstr "Tõlketunnuse puuduvad parameetrid: „%s“"
 
-#: weblate/checks/format.py:371
+#: weblate/checks/format.py:392
 #, fuzzy, python-format
 #| msgid "Following format strings are missing: %s"
 msgid "Following format strings are wrongly ordered: %s"
 msgstr "Järgmised vormingustringid puuduvad: %s"
 
-#: weblate/checks/format.py:375 weblate/checks/placeholders.py:93
+#: weblate/checks/format.py:396 weblate/checks/placeholders.py:93
 #, python-format
 msgid "Following format strings are missing: %s"
 msgstr "Järgmised vormingustringid puuduvad: %s"
 
-#: weblate/checks/format.py:379 weblate/checks/placeholders.py:98
+#: weblate/checks/format.py:400 weblate/checks/placeholders.py:98
 #, python-format
 msgid "Following format strings are extra: %s"
 msgstr ""
 
-#: weblate/checks/format.py:430
+#: weblate/checks/format.py:451
 msgid "Python format"
 msgstr ""
 
-#: weblate/checks/format.py:431
+#: weblate/checks/format.py:452
 msgid "Python format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:438
+#: weblate/checks/format.py:459
 msgid "PHP format"
 msgstr ""
 
-#: weblate/checks/format.py:439
+#: weblate/checks/format.py:460
 msgid "PHP format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:446
+#: weblate/checks/format.py:467
 msgid "C format"
 msgstr ""
 
-#: weblate/checks/format.py:447
+#: weblate/checks/format.py:468
 msgid "C format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:454
+#: weblate/checks/format.py:475
 msgid "Perl format"
 msgstr ""
 
-#: weblate/checks/format.py:455
+#: weblate/checks/format.py:476
 msgid "Perl format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:462
+#: weblate/checks/format.py:483
 msgid "JavaScript format"
 msgstr ""
 
-#: weblate/checks/format.py:463
+#: weblate/checks/format.py:484
 msgid "JavaScript format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:470
+#: weblate/checks/format.py:491
 #, fuzzy
 #| msgid "Qt format"
 msgid "Lua format"
 msgstr "Qt-vorming"
 
-#: weblate/checks/format.py:471
+#: weblate/checks/format.py:492
 #, fuzzy
 #| msgid "Qt format string does not match source"
 msgid "Lua format string does not match source"
 msgstr "Qt-vormingu lausend ei vasta lähtelausendile"
 
-#: weblate/checks/format.py:478
+#: weblate/checks/format.py:499
+#, fuzzy
+#| msgid "Qt plural format"
+msgid "Object Pascal format"
+msgstr "Mitmus Qt-vormingus"
+
+#: weblate/checks/format.py:500
+#, fuzzy
+#| msgid "Qt plural format string does not match source"
+msgid "Object Pascal format string does not match source"
+msgstr "Mitmus Qt-vormingus ei vasta lähtelausendile"
+
+#: weblate/checks/format.py:508
 #, fuzzy
 #| msgid "Qt format"
 msgid "Scheme format"
 msgstr "Qt-vorming"
 
-#: weblate/checks/format.py:479
+#: weblate/checks/format.py:509
 #, fuzzy
 #| msgid "Qt format string does not match source"
 msgid "Scheme format string does not match source"
 msgstr "Qt-vormingu lausend ei vasta lähtelausendile"
 
-#: weblate/checks/format.py:492
+#: weblate/checks/format.py:522
 msgid "Python brace format"
 msgstr ""
 
-#: weblate/checks/format.py:493
+#: weblate/checks/format.py:523
 msgid "Python brace format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:507
+#: weblate/checks/format.py:537
 msgid "C# format"
 msgstr ""
 
-#: weblate/checks/format.py:508
+#: weblate/checks/format.py:538
 msgid "C# format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:522
+#: weblate/checks/format.py:552
 msgid "Java format"
 msgstr ""
 
-#: weblate/checks/format.py:523
+#: weblate/checks/format.py:553
 msgid "Java format string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:530
+#: weblate/checks/format.py:560
 msgid "Java MessageFormat"
 msgstr ""
 
-#: weblate/checks/format.py:531
+#: weblate/checks/format.py:561
 msgid "Java MessageFormat string does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:562
+#: weblate/checks/format.py:592
 msgid "You need to pair up an apostrophe with another one."
 msgstr ""
 
-#: weblate/checks/format.py:568
+#: weblate/checks/format.py:598
 msgid "i18next interpolation"
 msgstr ""
 
-#: weblate/checks/format.py:569
+#: weblate/checks/format.py:599
 msgid "The i18next interpolation does not match source"
 msgstr ""
 
-#: weblate/checks/format.py:580
+#: weblate/checks/format.py:610
 msgid "ECMAScript template literals"
 msgstr ""
 
-#: weblate/checks/format.py:581
+#: weblate/checks/format.py:611
 #, fuzzy
 #| msgid "Translated"
 msgid "ECMAScript template literals do not match source"
 msgstr "Tõlgitud"
 
-#: weblate/checks/format.py:593
+#: weblate/checks/format.py:623
 #, fuzzy
 #| msgid "Percents translated"
 msgid "Percent placeholders"
 msgstr "Protsenti tõlgitud"
 
-#: weblate/checks/format.py:594
+#: weblate/checks/format.py:624
 #, fuzzy
 #| msgid "Translated"
 msgid "The percent placeholders do not match source"
 msgstr "Tõlgitud"
 
-#: weblate/checks/format.py:600
+#: weblate/checks/format.py:630
 #, fuzzy
 #| msgid "Information"
 msgid "Vue I18n formatting"
 msgstr "Teave"
 
-#: weblate/checks/format.py:601
+#: weblate/checks/format.py:631
 #, fuzzy
 #| msgid "Qt format string does not match source"
 msgid "The Vue I18n formatting does not match source"
 msgstr "Qt-vormingu lausend ei vasta lähtelausendile"
 
-#: weblate/checks/format.py:607
+#: weblate/checks/format.py:637
 msgid "Multiple unnamed variables"
 msgstr ""
 
-#: weblate/checks/format.py:609
+#: weblate/checks/format.py:639
 msgid ""
 "There are multiple unnamed variables in the string, making it impossible for "
 "translators to reorder them"
@@ -2791,10 +2794,8 @@ msgid "Does not follow glossary"
 msgstr "Tõlgitud keeled"
 
 #: weblate/checks/glossary.py:34
-#, fuzzy
-#| msgid "Translated"
 msgid "The translation does not follow terms defined in a glossary."
-msgstr "Tõlgitud"
+msgstr "See tõlge ei järgi sõnastikus kirjeldatud termineid."
 
 #: weblate/checks/glossary.py:83
 #, python-format
@@ -2949,10 +2950,8 @@ msgid "The translations in several languages have failing checks"
 msgstr ""
 
 #: weblate/checks/source.py:92
-#, fuzzy
-#| msgid "Following format strings are missing: %s"
 msgid "Following checks are failing:"
-msgstr "Järgmised vormingustringid puuduvad: %s"
+msgstr "Järgnevad kontrollid näitavad vigu:"
 
 #: weblate/checks/source.py:109
 #, fuzzy
@@ -3093,7 +3092,7 @@ msgstr ""
 msgid "gettext PO"
 msgstr ""
 
-#: weblate/formats/exporters.py:248 weblate/formats/ttkit.py:1103
+#: weblate/formats/exporters.py:248 weblate/formats/ttkit.py:1098
 msgid "XLIFF with gettext extensions"
 msgstr ""
 
@@ -3125,7 +3124,7 @@ msgstr ""
 msgid "JSON"
 msgstr ""
 
-#: weblate/formats/exporters.py:430 weblate/formats/ttkit.py:1244
+#: weblate/formats/exporters.py:430 weblate/formats/ttkit.py:1239
 msgid "Android String Resource"
 msgstr ""
 
@@ -3139,149 +3138,149 @@ msgstr "Tõlgitud"
 msgid "Excel Open XML"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1020
+#: weblate/formats/ttkit.py:1015
 msgid "gettext PO file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1033
+#: weblate/formats/ttkit.py:1028
 msgid "gettext PO file (monolingual)"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1057
+#: weblate/formats/ttkit.py:1052
 #, fuzzy
 #| msgid "Translation key"
 msgid "Qt Linguist translation file"
 msgstr "Tõlke võti"
 
-#: weblate/formats/ttkit.py:1074
+#: weblate/formats/ttkit.py:1069
 #, fuzzy
 #| msgid "Translation key"
 msgid "XLIFF translation file"
 msgstr "Tõlke võti"
 
-#: weblate/formats/ttkit.py:1133
+#: weblate/formats/ttkit.py:1128
 #, fuzzy
 #| msgid "Translated"
 msgid "iOS strings (UTF-16)"
 msgstr "Tõlgitud"
 
-#: weblate/formats/ttkit.py:1142
+#: weblate/formats/ttkit.py:1137
 msgid "iOS strings (UTF-8)"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1149
+#: weblate/formats/ttkit.py:1144
 msgid "Java Properties (UTF-8)"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1158
+#: weblate/formats/ttkit.py:1153
 msgid "Java Properties (UTF-16)"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1174
+#: weblate/formats/ttkit.py:1169
 msgid "Java Properties (ISO 8859-1)"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1192
+#: weblate/formats/ttkit.py:1187
 #, fuzzy
 #| msgid "Monolingual base language file"
 msgid "Joomla language file"
 msgstr "Ainukeelne aluskeele fail"
 
-#: weblate/formats/ttkit.py:1201
+#: weblate/formats/ttkit.py:1196
 msgid "GWT properties"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1209
+#: weblate/formats/ttkit.py:1204
 msgid "PHP strings"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1228
+#: weblate/formats/ttkit.py:1223
 #, fuzzy
 #| msgid "Translated"
 msgid "Laravel PHP strings"
 msgstr "Tõlgitud"
 
-#: weblate/formats/ttkit.py:1234
+#: weblate/formats/ttkit.py:1229
 msgid ".NET resource file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1256
+#: weblate/formats/ttkit.py:1251
 msgid "JSON file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1276
+#: weblate/formats/ttkit.py:1271
 msgid "JSON nested structure file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1283
+#: weblate/formats/ttkit.py:1278
 msgid "WebExtension JSON file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1292
+#: weblate/formats/ttkit.py:1287
 msgid "i18next JSON file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1300
+#: weblate/formats/ttkit.py:1295
 msgid "go-i18n JSON file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1307
+#: weblate/formats/ttkit.py:1302
 msgid "ARB file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1315
+#: weblate/formats/ttkit.py:1310
 msgid "CSV file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1402
+#: weblate/formats/ttkit.py:1397
 msgid "Simple CSV file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1423
+#: weblate/formats/ttkit.py:1418
 msgid "Simple CSV file (ISO-8859-1)"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1430
+#: weblate/formats/ttkit.py:1425
 msgid "YAML file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1449
+#: weblate/formats/ttkit.py:1444
 msgid "Ruby YAML file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1456
+#: weblate/formats/ttkit.py:1451
 msgid "DTD file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1497
+#: weblate/formats/ttkit.py:1492
 msgid "SubRip subtitle file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1511
+#: weblate/formats/ttkit.py:1506
 msgid "MicroDVD subtitle file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1518
+#: weblate/formats/ttkit.py:1513
 msgid "Advanced SubStation Alpha subtitle file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1525
+#: weblate/formats/ttkit.py:1520
 msgid "SubStation Alpha subtitle file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1532
+#: weblate/formats/ttkit.py:1527
 msgid "Flat XML file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1541
+#: weblate/formats/ttkit.py:1536
 msgid "INI file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1581
+#: weblate/formats/ttkit.py:1576
 msgid "Inno Setup INI file"
 msgstr ""
 
-#: weblate/formats/ttkit.py:1734
+#: weblate/formats/ttkit.py:1729
 #, fuzzy
 #| msgid "Translated languages"
 msgid "TermBase eXchange file"
@@ -4079,10 +4078,8 @@ msgid ""
 msgstr ""
 
 #: weblate/templates/accounts/contact.html:28
-#, fuzzy
-#| msgid "Could not send message to administrator."
 msgid "Contact server administrators"
-msgstr "Ei õnnestunud saata sõnumit haldajale."
+msgstr "Võta ühendust serveri haldajaga"
 
 #: weblate/templates/accounts/contact.html:37
 #: weblate/templates/manage/tools.html:26
@@ -4201,12 +4198,10 @@ msgid "Unapproved projects will be removed."
 msgstr "Heakskiitmata projektid kustutatakse."
 
 #: weblate/templates/accounts/hosting.html:36
-#, fuzzy
-#| msgid "There is no guarantee of service availability, nor quality."
 msgid ""
 "There is no guarantee of service availability, nor quality for free service "
 "plan."
-msgstr "Teenuse saadavuse ja kvaliteedi osas puudub selge garantii."
+msgstr "Tasuta teenuse saadavuse ja kvaliteedi osas puudub selge garantii."
 
 #: weblate/templates/accounts/hosting.html:41
 #, fuzzy
@@ -4463,10 +4458,8 @@ msgstr "IP aadress"
 #: weblate/templates/accounts/profile.html:229
 #: weblate/templates/mail/account_activity.html:26
 #: weblate/templates/manage/users_check.html:50
-#, fuzzy
-#| msgid "Username"
 msgid "User agent"
-msgstr "Kasutajanimi"
+msgstr "Kasutajarakendus"
 
 #: weblate/templates/accounts/profile.html:241
 msgid "No recent activity found!"
@@ -4985,10 +4978,11 @@ msgid "Checks"
 msgstr "Kontrollid"
 
 #: weblate/templates/base.html:163
-#, fuzzy, python-format
-#| msgid "Failed checks in %(project)s"
+#, python-format
 msgid "Failed checks in %(project)s — %(language)s"
-msgstr "Loogiliste kontrollide tulemusel leitud vead %(project)s projektis"
+msgstr ""
+"Loogiliste kontrollide tulemusel leitud vead %(project)s projektis "
+"%(language)s keeles"
 
 #: weblate/templates/base.html:174
 #, python-format
@@ -4996,10 +4990,9 @@ msgid "Failed checks in %(project)s"
 msgstr "Loogiliste kontrollide tulemusel leitud vead %(project)s projektis"
 
 #: weblate/templates/base.html:180
-#, fuzzy, python-format
-#| msgid "Failed checks in %(project)s"
+#, python-format
 msgid "Failed checks in %(language)s"
-msgstr "Loogiliste kontrollide tulemusel leitud vead %(project)s projektis"
+msgstr "Loogiliste kontrollide tulemusel leitud vead %(language)s keeles"
 
 #: weblate/templates/base.html:184
 msgid "Checks overview"
@@ -5062,10 +5055,8 @@ msgid "Help"
 msgstr "Abi"
 
 #: weblate/templates/base.html:266
-#, fuzzy
-#| msgid "Community support"
 msgid "Get support"
-msgstr "Kogukonna toetus"
+msgstr "Otsi abi"
 
 #: weblate/templates/base.html:269 weblate/templates/manage/index.html:83
 msgid "Get help"
@@ -5138,7 +5129,7 @@ msgstr "Ületab piirangut"
 
 #: weblate/templates/billing/detail.html:41
 msgid "Change plan or payment method"
-msgstr ""
+msgstr "Muuda arvelduskava või makseviisi"
 
 #: weblate/templates/billing/detail.html:45
 msgid "Terminate recurring payment"
@@ -5150,7 +5141,7 @@ msgstr "Arveldamise lõpetamiseks pead esmalt kõik projektid eemaldama."
 
 #: weblate/templates/billing/detail.html:52
 msgid "Terminate billing plan"
-msgstr "Lõpeta püsimaksed"
+msgstr "Lõpeta arvelduskava"
 
 #: weblate/templates/billing/detail.html:63
 msgid "Invoices"
@@ -5218,7 +5209,7 @@ msgstr ""
 
 #: weblate/templates/billing/list.html:12
 msgid "Plan"
-msgstr ""
+msgstr "Arvelduskava"
 
 #: weblate/templates/billing/list.html:13
 #, fuzzy
@@ -5266,13 +5257,11 @@ msgstr "Ootan makset"
 
 #: weblate/templates/billing/status.html:9
 msgid "Current plan"
-msgstr "Praegune kava"
+msgstr "Praegune arvelduskava"
 
 #: weblate/templates/billing/status.html:17
-#, fuzzy
-#| msgid "Change payment plan"
 msgid "Change plan"
-msgstr "Muuda maksekava"
+msgstr "Muuda arvelduskava"
 
 #: weblate/templates/billing/status.html:28
 #: weblate/templates/billing/status.html:39
@@ -6660,13 +6649,10 @@ msgstr ""
 "küsi meilt kinnitust tasuta arvelduskavale."
 
 #: weblate/templates/mail/billing_expired.html:16
-#, fuzzy
-#| msgid ""
-#| "Your billing plan has expired, if you want to continue using the service, "
-#| "please renew it."
 msgid "Your billing plan has expired and all its projects have been removed."
 msgstr ""
-"Sinu arvelduskava on aegunud. Teenuse kasutamiseks palun tasu uuenduse eest."
+"Sinu arvelduskava on aegunud ning kõik sellega seotud projektid on "
+"kustutatud."
 
 #: weblate/templates/mail/billing_expired.html:18
 msgid ""
@@ -6699,16 +6685,13 @@ msgstr ""
 "eemaldatakse %(date)s."
 
 #: weblate/templates/mail/billing_expired.html:40
-#, fuzzy, python-format
-#| msgid ""
-#| "If you don't perform the payment, all projects within this billing plan "
-#| "will be removed on %(date)s."
+#, python-format
 msgid ""
 "If your libre trial will not be approved, all projects within this billing "
 "plan will be removed on %(date)s."
 msgstr ""
-"Kui sa ei tee makset, siis kõik selle arvelduskavaga seotud projektid "
-"eemaldatakse %(date)s."
+"Kui sinu vaba tarkvara projekt ei saa heaks kiidetud, siis kõik selle "
+"arvelduskavaga seotud projektid eemaldatakse %(date)s."
 
 #: weblate/templates/mail/billing_expired_subject.txt:3
 #, fuzzy
@@ -7081,14 +7064,9 @@ msgid "Are you absolutely sure?"
 msgstr ""
 
 #: weblate/templates/manage-access.html:65
-#, fuzzy, python-format
-#| msgid ""
-#| "This will permanently delete %(count)s entry from the translation memory."
-#| msgid_plural ""
-#| "This will permanently delete %(count)s entries from the translation "
-#| "memory."
+#, python-format
 msgid "This will remove <b>%(user)s</b> access to this project."
-msgstr "Sellega kustutad püsivalt %(count)s kirje tõlkemälust."
+msgstr "Sellega eemaldad kasutaja <b>%(user)s</b> sellest projektist."
 
 #: weblate/templates/manage-access.html:79
 #, fuzzy
@@ -7245,10 +7223,8 @@ msgid "Support expiry"
 msgstr ""
 
 #: weblate/templates/manage/index.html:58
-#, fuzzy
-#| msgid "Donate to Weblate"
 msgid "Discover Weblate"
-msgstr "Anneta Weblatele"
+msgstr "Tutvu Weblate veebirakendusega"
 
 #: weblate/templates/manage/index.html:60
 #, fuzzy
@@ -7339,10 +7315,8 @@ msgid ""
 msgstr ""
 
 #: weblate/templates/manage/snippets/activation-form.html:17
-#, fuzzy
-#| msgid "Account activity"
 msgid "Activate"
-msgstr "Konto tegevused"
+msgstr "Aktiveeri"
 
 #: weblate/templates/manage/snippets/backup-credentials.html:5
 msgid "Backup repository"
@@ -7927,11 +7901,8 @@ msgid "This translation is forbidden."
 msgstr "See tõlge on lukustatud."
 
 #: weblate/templates/snippets/glossary.html:9
-#, fuzzy
-#| msgid "%(count)s string needing action"
-#| msgid_plural "%(count)s strings needing action"
 msgid "This term should not be translated."
-msgstr "%(count)s lausend vajab tähelepanu"
+msgstr "Seda sõna palun ära tõlgi."
 
 #: weblate/templates/snippets/glossary.html:11
 msgid "Copy word into translation"
@@ -8218,12 +8189,11 @@ msgid "%(value)s of %(all)s"
 msgstr "%(value)s / %(all)s"
 
 #: weblate/templates/snippets/list-objects-percent.html:7
-#, fuzzy, python-format
-#| msgid "Translated"
+#, python-format
 msgid "Completed translation with %(count)s string"
 msgid_plural "Completed translation with %(count)s strings"
-msgstr[0] "Tõlgitud"
-msgstr[1] "Tõlgitud"
+msgstr[0] "%(count)s lausendiga tõlge sai valmis"
+msgstr[1] "%(count)s lausendiga tõlge sai valmis"
 
 #: weblate/templates/snippets/list-objects.html:19
 #: weblate/templates/snippets/list-objects.html:29
@@ -8578,10 +8548,8 @@ msgid "Source in review"
 msgstr "Lähte lausendite läbivaatus"
 
 #: weblate/templates/snippets/unit-readonly-badge.html:6
-#, fuzzy
-#| msgid "Source strings"
 msgid "Source string editing is disabled."
-msgstr "Lähtelausendid"
+msgstr "Lähtelausendi muutmine ei ole kasutusel."
 
 #: weblate/templates/snippets/unit-readonly-badge.html:8
 msgid "Source strings can’t be edited. You can delete them and add new ones."
@@ -8835,10 +8803,8 @@ msgid "This project does no longer fit into libre hosting conditions."
 msgstr ""
 
 #: weblate/templates/trans/alert/nomaskmatches.html:4
-#, fuzzy
-#| msgid "Translation key"
 msgid "There are no translations in this component."
-msgstr "Tõlke võti"
+msgstr "Selles osises ei leidu tõlkeid."
 
 #: weblate/templates/trans/alert/nomaskmatches.html:7
 #, python-format
@@ -8902,10 +8868,8 @@ msgid ""
 msgstr ""
 
 #: weblate/templates/trans/alert/unusedenforcedcheck.html:4
-#, fuzzy
-#| msgid "Following format strings are missing: %s"
 msgid "Following enforced checks are not used anywhere:"
-msgstr "Järgmised vormingustringid puuduvad: %s"
+msgstr "Järgnevaid kontrolle ei ole kusagil kasutusel:"
 
 #: weblate/templates/trans/alert/unusedenforcedcheck.html:8
 #, python-format
@@ -9227,10 +9191,8 @@ msgstr "Vahekeel"
 #: weblate/templates/translate.html:138 weblate/templates/translate.html:600
 #: weblate/templates/zen-units.html:28 weblate/trans/forms.py:457
 #: weblate/trans/models/unit.py:318
-#, fuzzy
-#| msgid "Translations"
 msgid "Explanation"
-msgstr "Tõlked"
+msgstr "Selgitus"
 
 #: weblate/templates/translate.html:161 weblate/trans/forms.py:907
 #, fuzzy
@@ -9445,10 +9407,9 @@ msgstr[0] "Sellest lausendist on %(count)s variant."
 msgstr[1] "Sellest lausendist on %(count)s varianti."
 
 #: weblate/templates/translate.html:527
-#, fuzzy, python-format
-#| msgid "Glossaries"
+#, python-format
 msgid "Browse glossary %(name)s"
-msgstr "Sõnastikud"
+msgstr "Sirvi %(name)s sõnastikke"
 
 #: weblate/templates/translate.html:549 weblate/templates/translate.html:559
 msgid "Add term to glossary"
@@ -9466,7 +9427,7 @@ msgstr "Hetkel ei ole ühtegi seostatud ekraanitõmmist ."
 
 #: weblate/templates/translate.html:605
 msgid "No explanation currently provided."
-msgstr ""
+msgstr "Hetkel selgitusi ei leidu."
 
 #: weblate/templates/translate.html:634
 msgid "No labels currently set."
@@ -9519,10 +9480,9 @@ msgid "<code>%(flags)s</code> is inherited from %(object)s."
 msgstr ""
 
 #: weblate/templates/translate.html:762
-#, fuzzy, python-format
-#| msgid "Translated"
+#, python-format
 msgid "Add a new variant for \"%(existing)s\""
-msgstr "Tõlgitud"
+msgstr "Lisa „%(existing)s“ uus variant"
 
 #: weblate/templates/translation.html:55
 #, fuzzy
@@ -10005,7 +9965,7 @@ msgstr ""
 #: weblate/trans/forms.py:633
 #, fuzzy
 #| msgid "Number of translated strings"
-msgid "Update only non translated strings"
+msgid "Update only untranslated strings"
 msgstr "Tõlgitud stringide arv"
 
 #: weblate/trans/forms.py:634
@@ -10364,7 +10324,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Translation context for Gettext
-#: weblate/trans/forms.py:2025 weblate/trans/models/component.py:2969
+#: weblate/trans/forms.py:2025 weblate/trans/models/component.py:2979
 msgid "Context"
 msgstr ""
 
@@ -10538,7 +10498,7 @@ msgstr "Tõlkefailide töötlemine ei õnnestunud."
 #. Translators: Name of an alert
 #: weblate/trans/models/alert.py:241
 msgid "Your billing plan has exceeded its limits."
-msgstr ""
+msgstr "Sinu arvelduskava teenusemahud on ületatud."
 
 #. Translators: Name of an alert
 #: weblate/trans/models/alert.py:247
@@ -10594,10 +10554,8 @@ msgstr "Kuvatõmmised"
 
 #. Translators: Name of an alert
 #: weblate/trans/models/alert.py:331
-#, fuzzy
-#| msgid "Translated languages"
 msgid "Ambiguous language code."
-msgstr "Tõlgitud keeled"
+msgstr "Mitmetähenduslik keelekood."
 
 #. Translators: Name of an alert
 #: weblate/trans/models/alert.py:348
@@ -11526,37 +11484,37 @@ msgstr ""
 msgid "Accepting suggestions automatically only works with voting turned on."
 msgstr ""
 
-#: weblate/trans/models/component.py:2866
+#: weblate/trans/models/component.py:2876
 msgid "Could not add new translation file."
 msgstr "Uue tõlkefaili lisamine ei õnnestunud."
 
-#: weblate/trans/models/component.py:2882
+#: weblate/trans/models/component.py:2892
 msgid "The given language is filtered by the language filter."
 msgstr ""
 
-#: weblate/trans/models/component.py:2906
+#: weblate/trans/models/component.py:2916
 msgid "Translation file already exists!"
 msgstr ""
 
-#: weblate/trans/models/component.py:2926
+#: weblate/trans/models/component.py:2936
 #, fuzzy
 #| msgid "The translation base language can not be edited."
 msgid "The translation will be updated in the background."
 msgstr "Tõlke aluskeel pole toimetatav."
 
 #. Translators: Translation key for monolingual translations
-#: weblate/trans/models/component.py:2971 weblate/utils/views.py:140
+#: weblate/trans/models/component.py:2981 weblate/utils/views.py:140
 msgctxt "Translation key"
 msgid "Key"
 msgstr ""
 
-#: weblate/trans/models/component.py:3032
+#: weblate/trans/models/component.py:3042
 #, fuzzy
 #| msgid "Add glossary entry"
 msgid "Add new glossary term"
 msgstr "Lisa uus kirje sõnastikku"
 
-#: weblate/trans/models/component.py:3033
+#: weblate/trans/models/component.py:3043
 #, fuzzy
 #| msgid "Translated"
 msgid "Add new translation string"
@@ -11717,76 +11675,76 @@ msgstr ""
 msgid "Failed to parse file %(file)s: %(error)s"
 msgstr ""
 
-#: weblate/trans/models/translation.py:1324
+#: weblate/trans/models/translation.py:1337
 #, fuzzy
 #| msgid "This translation does not yet exist."
 msgid "This string seems to already exist."
 msgstr "Seda tõlget pole veel olemas."
 
-#: weblate/trans/models/translation.py:1331
-#: weblate/trans/models/translation.py:1353
-#: weblate/trans/models/translation.py:1359
-#: weblate/trans/models/translation.py:1363
-#: weblate/trans/models/translation.py:1378
+#: weblate/trans/models/translation.py:1344
+#: weblate/trans/models/translation.py:1366
+#: weblate/trans/models/translation.py:1372
+#: weblate/trans/models/translation.py:1376
+#: weblate/trans/models/translation.py:1391
 #, fuzzy, python-format
 #| msgid "Translated"
 msgid "Failed adding string: %s"
 msgstr "Tõlgitud"
 
-#: weblate/trans/models/translation.py:1331
+#: weblate/trans/models/translation.py:1344
 #, fuzzy
 #| msgid "Translation notifications"
 msgid "No translation found."
 msgstr "Tõlgete teated"
 
-#: weblate/trans/models/translation.py:1363
-#: weblate/trans/models/translation.py:1378
+#: weblate/trans/models/translation.py:1376
+#: weblate/trans/models/translation.py:1391
 #, fuzzy
 #| msgid "Edit additional string info"
 msgid "Failed to parse new string"
 msgstr "Muuda lausendite lisateavet"
 
-#: weblate/trans/models/translation.py:1386
+#: weblate/trans/models/translation.py:1399
 #, fuzzy, python-format
 #| msgid "Following components would be created"
 msgid "Context would be created as \"%s\""
 msgstr "Loodaks järgmised osised"
 
-#: weblate/trans/models/translation.py:1390
+#: weblate/trans/models/translation.py:1403
 #, fuzzy, python-format
 #| msgid "Following components would be created"
 msgid "Source would be created as %s"
 msgstr "Loodaks järgmised osised"
 
-#: weblate/trans/models/unit.py:1385
+#: weblate/trans/models/unit.py:1389
 #, fuzzy
 #| msgid "Suggested translations"
 msgid "Unmark as read-only"
 msgstr "Soovitatud tõlked"
 
-#: weblate/trans/models/unit.py:1388
+#: weblate/trans/models/unit.py:1392
 #, fuzzy
 #| msgid "Mark as spam"
 msgid "Mark as read-only"
 msgstr "Märgi spämmiks"
 
-#: weblate/trans/models/unit.py:1395
+#: weblate/trans/models/unit.py:1399
 #, fuzzy
 #| msgid "Suggested translations"
 msgid "Unmark as forbidden translation"
 msgstr "Soovitatud tõlked"
 
-#: weblate/trans/models/unit.py:1403
+#: weblate/trans/models/unit.py:1407
 #, fuzzy
 #| msgid "Suggested translations"
 msgid "Mark as forbidden translation"
 msgstr "Soovitatud tõlked"
 
-#: weblate/trans/models/unit.py:1411
+#: weblate/trans/models/unit.py:1415
 msgid "Unmark as terminology"
 msgstr ""
 
-#: weblate/trans/models/unit.py:1419
+#: weblate/trans/models/unit.py:1423
 msgid "Mark as terminology"
 msgstr ""
 
@@ -12529,10 +12487,8 @@ msgid "Language of the project was removed."
 msgstr "Tõlke võti"
 
 #: weblate/trans/views/source.py:75
-#, fuzzy
-#| msgid "Edit additional string info"
 msgid "Failed to change additional string info!"
-msgstr "Muuda lausendite lisateavet"
+msgstr "Lausendi lisateabe muutmine ei õnnestunud!"
 
 #: weblate/trans/widgets.py:247
 msgid "Big status badge"
@@ -12826,11 +12782,11 @@ msgstr "Osiste arv"
 msgid "Number of failing checks"
 msgstr "Tõlke võti"
 
-#: weblate/vcs/git.py:598
+#: weblate/vcs/git.py:603
 msgid "Git with force push"
 msgstr ""
 
-#: weblate/vcs/git.py:839
+#: weblate/vcs/git.py:855
 msgid "No remote repository"
 msgstr "kaug-varamut pole"
 

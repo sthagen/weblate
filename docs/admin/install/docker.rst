@@ -222,6 +222,13 @@ number of workers:
 .. code-block:: yaml
 
     environment:
+      WEBLATE_WORKERS: 2
+
+You can also fine-tune individual worker categories:
+
+.. code-block:: yaml
+
+    environment:
       UWSGI_WORKERS: 4
       CELERY_MAIN_OPTIONS: --concurrency 2
       CELERY_NOTIFY_OPTIONS: --concurrency 1
@@ -229,6 +236,7 @@ number of workers:
 
 .. seealso::
 
+   :envvar:`WEBLATE_WORKERS`
    :envvar:`CELERY_MAIN_OPTIONS`,
    :envvar:`CELERY_NOTIFY_OPTIONS`,
    :envvar:`CELERY_MEMORY_OPTIONS`,
@@ -348,8 +356,17 @@ Generic settings
 
             :ref:`docker-admin-login`,
             :envvar:`WEBLATE_ADMIN_PASSWORD`,
+            :envvar:`WEBLATE_ADMIN_PASSWORD_FILE`,
             :envvar:`WEBLATE_ADMIN_NAME`,
             :envvar:`WEBLATE_ADMIN_EMAIL`
+
+.. envvar:: WEBLATE_ADMIN_PASSWORD_FILE
+
+    Sets the path to a file containing the password for the `admin` user.
+
+    .. seealso::
+
+            :envvar:`WEBLATE_ADMIN_PASSWORD`
 
 .. envvar:: WEBLATE_SERVER_EMAIL
 .. envvar:: WEBLATE_DEFAULT_FROM_EMAIL
@@ -684,6 +701,12 @@ Generic settings
       :setting:`RATELIMIT_WINDOW`,
       :setting:`RATELIMIT_LOCKOUT`
 
+.. envvar:: WEBLATE_ENABLE_AVATARS
+
+   .. versionadded:: 4.6.1
+
+   Configures :setting:`ENABLE_AVATARS`.
+
 
 Machine translation settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -985,6 +1008,10 @@ both Weblate and PostgreSQL containers.
 
     PostgreSQL password.
 
+.. envvar:: POSTGRES_PASSWORD_FILE
+
+    Path to the file containing the PostgreSQL password. Use as an alternative to POSTGRES_PASSWORD.
+
 .. envvar:: POSTGRES_USER
 
     PostgreSQL username.
@@ -1113,6 +1140,12 @@ Example SSL configuration:
     E-mail authentication password.
 
     .. seealso:: :setting:`django:EMAIL_HOST_PASSWORD`
+
+.. envvar:: WEBLATE_EMAIL_HOST_PASSWORD_FILE
+
+    Path to the file containing the e-mail authentication password.
+
+    .. seealso:: :envvar:`WEBLATE_EMAIL_HOST_PASSWORD`
 
 .. envvar:: WEBLATE_EMAIL_USE_SSL
 
@@ -1259,6 +1292,20 @@ adjusted by the following variables:
 Container settings
 ~~~~~~~~~~~~~~~~~~
 
+.. envvar:: WEBLATE_WORKERS
+
+   .. versionadded:: 4.6.1
+
+   Base number of worker processes running in the container. When not set it is
+   determined automatically on container startup based on number of CPU cores
+   available.
+
+   It is used to determine :envvar:`CELERY_MAIN_OPTIONS`,
+   :envvar:`CELERY_NOTIFY_OPTIONS`, :envvar:`CELERY_MEMORY_OPTIONS`,
+   :envvar:`CELERY_TRANSLATE_OPTIONS`, :envvar:`CELERY_BACKUP_OPTIONS`,
+   :envvar:`CELERY_BEAT_OPTIONS`, and :envvar:`UWSGI_WORKERS`. You can use
+   these settings to fine-tune.
+
 .. envvar:: CELERY_MAIN_OPTIONS
 .. envvar:: CELERY_NOTIFY_OPTIONS
 .. envvar:: CELERY_MEMORY_OPTIONS
@@ -1270,8 +1317,7 @@ Container settings
     to adjust concurrency (``--concurrency 16``) or use different pool
     implementation (``--pool=gevent``).
 
-    By default, the number of concurrent workers matches the number of processors
-    (except the backup worker, which is supposed to run only once).
+    By default, the number of concurrent workers is based on :envvar:`WEBLATE_WORKERS`.
 
     **Example:**
 
@@ -1289,7 +1335,7 @@ Container settings
 
     Configure how many uWSGI workers should be executed.
 
-    It defaults to number of processors + 1.
+    It defaults to :envvar:`WEBLATE_WORKERS`.
 
     **Example:**
 

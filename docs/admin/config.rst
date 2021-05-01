@@ -386,8 +386,10 @@ The following subdirectories usually exist:
     SSH keys and configuration.
 :file:`static`
     Default location for static Django files, specified by :setting:`django:STATIC_ROOT`. See :ref:`static-files`.
+
+    The Docker container uses a separate volume for this, see :ref:`docker-volume`.
 :file:`media`
-    Default location for Django media files, specified by :setting:`django:MEDIA_ROOT`. Contains uploaded screenshots.
+    Default location for Django media files, specified by :setting:`django:MEDIA_ROOT`. Contains uploaded screenshots, see :ref:`screenshots`.
 :file:`vcs`
     Version control repositories for translations.
 :file:`backups`
