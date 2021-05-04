@@ -7,10 +7,21 @@ Not yet released.
 * Added support for ``object-pascal-format`` used in gettext PO.
 * Renamed :guilabel:`Nearby keys` to :guilabel:`Similar keys` to better describe the purpose.
 
-Weblate 4.6.1
+Weblate 4.6.2
 -------------
 
 Not yet released.
+
+* Fixed crash after moving shared component between projects.
+* Fixed adding new strings to empty properties files.
+* Fixed copy icon alignment in RTL languages.
+
+`All changes in detail <https://github.com/WeblateOrg/weblate/milestone/66?closed=1>`__.
+
+Weblate 4.6.1
+-------------
+
+Released on May 2nd 2021.
 
 * Remove obsolete spam protection code.
 * Improve source plural check accuracy.
@@ -82,7 +93,7 @@ Released on March 26th 2021.
 Weblate 4.5.1
 -------------
 
-Released on March 05th 2021.
+Released on March 5th 2021.
 
 * Fixed editing of glossary flags in some corner cases.
 * Extend metrics usage to improve performance of several pages.
@@ -378,7 +389,7 @@ Released on June 15th 2020.
 Weblate 4.0.4
 -------------
 
-Released on May 07th 2020.
+Released on May 7th 2020.
 
 * Fixed testsuite execution on some Python 3.8 environments.
 * Typo fixes in the documentation.
@@ -392,7 +403,7 @@ Released on May 07th 2020.
 Weblate 4.0.3
 -------------
 
-Released on May 02nd 2020.
+Released on May 2nd 2020.
 
 * Fixed possible crash in reports.
 * User mentions in comments are now case insensitive.
