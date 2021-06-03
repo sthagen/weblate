@@ -1050,6 +1050,25 @@ class UserManageForm(forms.Form):
     )
 
 
+class UserBlockForm(forms.Form):
+    user = UserField(
+        label=_("User to block"),
+        help_text=_(
+            "Please type in an existing Weblate account name or e-mail address."
+        ),
+    )
+    expiry = forms.ChoiceField(
+        label=_("Block duration"),
+        choices=(
+            ("", _("Block user until I unblock them")),
+            ("1", _("Block user for one day")),
+            ("7", _("Block user for one week")),
+            ("30", _("Block user for one month")),
+        ),
+        required=False,
+    )
+
+
 class ReportsForm(forms.Form):
     style = forms.ChoiceField(
         label=_("Report format"),
@@ -1736,7 +1755,7 @@ class ComponentDiscoverForm(ComponentInitCreateForm):
             self.cleaned_data.update(self.discovered[int(discovery)])
 
 
-class ComponentRenameForm(SettingsBaseForm):
+class ComponentRenameForm(SettingsBaseForm, ComponentDocsMixin):
     """Component rename form."""
 
     class Meta:
@@ -1744,7 +1763,7 @@ class ComponentRenameForm(SettingsBaseForm):
         fields = ["slug"]
 
 
-class ComponentMoveForm(SettingsBaseForm):
+class ComponentMoveForm(SettingsBaseForm, ComponentDocsMixin):
     """Component rename form."""
 
     class Meta:
@@ -1897,7 +1916,7 @@ class ProjectSettingsForm(SettingsBaseForm, ProjectDocsMixin, ProjectAntispamMix
             ]
 
 
-class ProjectRenameForm(SettingsBaseForm):
+class ProjectRenameForm(SettingsBaseForm, ProjectDocsMixin):
     """Project rename form."""
 
     class Meta:

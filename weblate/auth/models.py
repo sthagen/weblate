@@ -90,6 +90,10 @@ class Role(models.Model):
         help_text=_("Choose permissions granted to this role."),
     )
 
+    class Meta:
+        verbose_name = "Role"
+        verbose_name_plural = "Roles"
+
     def __str__(self):
         return pgettext("Access-control role", self.name)
 
@@ -155,6 +159,10 @@ class Group(models.Model):
     )
 
     objects = GroupManager()
+
+    class Meta:
+        verbose_name = "Group"
+        verbose_name_plural = "Groups"
 
     def __str__(self):
         return pgettext("Access-control group", self.name)
@@ -353,6 +361,10 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email", "full_name"]
     DUMMY_FIELDS = ("first_name", "last_name", "is_staff")
+
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
     def __str__(self):
         return self.full_name
@@ -573,6 +585,18 @@ class User(AbstractBaseUser):
                 group=group
             ).values_list("project_id", flat=True):
                 projects[project].append((permissions, languages))
+        # Apply blocking
+        now = timezone.now()
+        for block in self.userblock_set.iterator():
+            if block.expiry is not None and block.expiry <= now:
+                # Delete expired blocks
+                block.delete()
+            else:
+                # Remove all permissions for blocked user
+                projects[block.project_id] = [
+                    ((), languages)
+                    for permissions, languages in projects[block.project_id]
+                ]
         self._permissions = {"projects": projects, "components": components}
 
     @cached_property
@@ -632,6 +656,24 @@ class AutoGroup(models.Model):
 
     def __str__(self):
         return f"Automatic rule for {self.group}"
+
+
+class UserBlock(models.Model):
+    user = models.ForeignKey(
+        User, verbose_name=_("User to block"), on_delete=models.deletion.CASCADE
+    )
+    project = models.ForeignKey(
+        Project, verbose_name=_("Project"), on_delete=models.deletion.CASCADE
+    )
+    expiry = models.DateTimeField(_("Block expiry"), null=True)
+
+    class Meta:
+        verbose_name = _("Blocked user")
+        verbose_name_plural = _("Blocked users")
+        unique_together = ("user", "project")
+
+    def __str__(self):
+        return f"{self.user} blocked for {self.project}"
 
 
 def create_groups(update):

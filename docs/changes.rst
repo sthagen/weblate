@@ -4,17 +4,31 @@ Weblate 4.7
 Not yet released.
 
 * Improved configuration health check.
-* Added support for ``object-pascal-format`` used in gettext PO.
+* Added support for ``object-pascal-format`` used in gettext PO, see :ref:`check-object-pascal-format`.
 * Renamed :guilabel:`Nearby keys` to :guilabel:`Similar keys` to better describe the purpose.
+* Added support for :ref:`mi18n-lang`.
+* Improved SAML authentication integration.
+* Fixed :ref:`vcs-gerrit` integration to better handle corner cases.
+* Weblate now requires Django 3.2.
+* Fixed inviting users when e-mail authentication is disabled.
+* Improved language definitions.
+* Added support for blocking users from contributing to a project.
+
+`All changes in detail <https://github.com/WeblateOrg/weblate/milestone/64?closed=1>`__.
 
 Weblate 4.6.2
 -------------
 
-Not yet released.
+Released on May 8th 2021.
 
 * Fixed crash after moving shared component between projects.
 * Fixed adding new strings to empty properties files.
 * Fixed copy icon alignment in RTL languages.
+* Extended string statistics on the Info tab.
+* Fixed handling of translation files ignored in Git.
+* Improved metrics performance.
+* Fixed possible bug in saving glossaries.
+* Fixed consistency check behavior on languages with different plural rules.
 
 `All changes in detail <https://github.com/WeblateOrg/weblate/milestone/66?closed=1>`__.
 

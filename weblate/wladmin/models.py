@@ -57,6 +57,8 @@ class ConfigurationError(models.Model):
 
     class Meta:
         index_together = [("ignored", "timestamp")]
+        verbose_name = "Configuration error"
+        verbose_name_plural = "Configuration errors"
 
     def __str__(self):
         return self.name
@@ -87,6 +89,10 @@ class SupportStatus(models.Model):
     discoverable = models.BooleanField(default=False)
 
     objects = SupportStatusManager()
+
+    class Meta:
+        verbose_name = "Support status"
+        verbose_name_plural = "Support statuses"
 
     def __str__(self):
         return f"{self.name}:{self.expiry}"
@@ -155,6 +161,10 @@ class BackupService(models.Model):
     passphrase = models.CharField(max_length=100, default=make_password)
     paperkey = models.TextField()
 
+    class Meta:
+        verbose_name = "Support service"
+        verbose_name_plural = "Support services"
+
     def __str__(self):
         return self.repository
 
@@ -163,10 +173,13 @@ class BackupService(models.Model):
 
     def ensure_init(self):
         if not self.paperkey:
-            log = initialize(self.repository, self.passphrase)
-            self.backuplog_set.create(event="init", log=log)
-            self.paperkey = get_paper_key(self.repository)
-            self.save()
+            try:
+                log = initialize(self.repository, self.passphrase)
+                self.backuplog_set.create(event="init", log=log)
+                self.paperkey = get_paper_key(self.repository)
+                self.save()
+            except BackupError as error:
+                self.backuplog_set.create(event="error", log=str(error))
 
     def backup(self):
         try:
@@ -196,6 +209,10 @@ class BackupLog(models.Model):
         ),
     )
     log = models.TextField()
+
+    class Meta:
+        verbose_name = "Backup log"
+        verbose_name_plural = "Backup logs"
 
     def __str__(self):
         return f"{self.service}:{self.event}"

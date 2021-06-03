@@ -23,7 +23,7 @@ import inspect
 import os
 import re
 import subprocess
-from typing import List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -428,11 +428,19 @@ class TTKitFormat(TranslationFormat):
         return result
 
     @classmethod
-    def create_new_file(cls, filename, language, base):
+    def create_new_file(
+        cls,
+        filename: str,
+        language: str,
+        base: str,
+        callback: Optional[Callable] = None,
+    ):
         """Handle creation of new translation file."""
         if base:
             # Parse file
             store = cls.parse_store(base)
+            if callback:
+                callback(store)
             cls.untranslate_store(store, language)
             store.savefile(filename)
         elif cls.new_translation is None:
@@ -719,6 +727,15 @@ class FlatXMLUnit(TTKitUnit):
     def source(self):
         return get_string(self.mainunit.target)
 
+    def has_content(self):
+        """Check whether unit has content.
+
+        The attribute-less units will have context None.
+        """
+        if self.context is None:
+            return False
+        return super().has_content()
+
 
 class MonolingualIDUnit(TTKitUnit):
     @cached_property
@@ -1001,8 +1018,16 @@ class BasePoFormat(TTKitFormat, BilingualUpdateMixin):
             )
             # The warnings can cause corruption (for example in case
             # PO file header is missing ASCII encoding is assumed)
-            if "warning:" in result.stderr:
-                raise UpdateError(" ".join(cmd), result.stderr)
+            errors = []
+            for line in result.stderr.splitlines():
+                if (
+                    "warning: internationalized messages should not contain the" in line
+                    or ". done." in line
+                ):
+                    continue
+                errors.append(line)
+            if errors:
+                raise UpdateError(" ".join(cmd), "\n".join(errors))
         except OSError as error:
             report_error(cause="Failed msgmerge")
             raise UpdateError(" ".join(cmd), error)
@@ -1752,3 +1777,12 @@ class TBXFormat(TTKitFormat):
         )
         # Add language header if not present
         self.store.addheader()
+
+
+class PropertiesMi18nFormat(PropertiesUtf8Format):
+    name = _("mi18n lang file")
+    format_id = "mi18n-lang"
+    new_translation = "\n"
+    language_format = "java"
+    check_flags = ("es-format",)
+    monolingual = True

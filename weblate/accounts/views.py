@@ -82,6 +82,8 @@ from weblate.accounts.forms import (
     DashboardSettingsForm,
     EmailForm,
     EmptyConfirmForm,
+    GroupAddForm,
+    GroupRemoveForm,
     LanguagesForm,
     LoginForm,
     NotificationForm,
@@ -110,7 +112,7 @@ from weblate.accounts.pipeline import EmailAlreadyAssociated, UsernameAlreadyAss
 from weblate.accounts.utils import remove_user
 from weblate.auth.models import User
 from weblate.logger import LOGGER
-from weblate.trans.models import Change, Component, Project, Suggestion
+from weblate.trans.models import Change, Component, Suggestion, Translation
 from weblate.trans.models.project import prefetch_project_flags
 from weblate.utils import messages
 from weblate.utils.errors import report_error
@@ -120,7 +122,6 @@ from weblate.utils.ratelimit import (
     session_ratelimit_post,
 )
 from weblate.utils.request import get_ip_address, get_user_agent
-from weblate.utils.site import get_site_url
 from weblate.utils.stats import prefetch_stats
 from weblate.utils.views import get_component, get_project
 
@@ -280,7 +281,7 @@ def get_notification_forms(request):
                 component = Component.objects.filter_access(user).get(
                     pk=request.GET["notify_component"],
                 )
-                active = key = (SCOPE_COMPONENT, component.project_id, component.pk)
+                active = key = (SCOPE_COMPONENT, -1, component.pk)
                 subscriptions[key] = {}
                 initials[key] = {
                     "scope": SCOPE_COMPONENT,
@@ -608,9 +609,26 @@ class UserPage(UpdateView):
     context_object_name = "page_user"
     fields = ["username", "full_name", "email", "is_superuser", "is_active"]
 
+    group_form = None
+
     def post(self, request, **kwargs):
         if not request.user.has_perm("user.edit"):
             raise PermissionDenied()
+        user = self.object = self.get_object()
+        if "add_group" in request.POST:
+            self.group_form = GroupAddForm(request.POST)
+            if self.group_form.is_valid():
+                user.groups.add(self.group_form.cleaned_data["add_group"])
+                return HttpResponseRedirect(self.get_success_url() + "#groups")
+        if "remove_group" in request.POST:
+            form = GroupRemoveForm(request.POST)
+            if form.is_valid():
+                user.groups.remove(form.cleaned_data["remove_group"])
+                return HttpResponseRedirect(self.get_success_url() + "#groups")
+        if "remove_user" in request.POST:
+            remove_user(user, request)
+            return HttpResponseRedirect(self.get_success_url() + "#groups")
+
         return super().post(request, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -628,17 +646,20 @@ class UserPage(UpdateView):
         last_changes = all_changes[:10]
 
         # Filter where project is active
-        user_projects_ids = set(
-            all_changes.values_list("translation__component__project", flat=True)
+        user_translation_ids = set(all_changes.values_list("translation", flat=True))
+        user_translations = (
+            Translation.objects.prefetch()
+            .filter(
+                id__in=user_translation_ids,
+                component__project_id__in=allowed_project_ids,
+            )
+            .order()
         )
-        user_projects = Project.objects.filter(
-            id__in=user_projects_ids & allowed_project_ids
-        ).order()
 
         context["page_profile"] = user.profile
         context["last_changes"] = last_changes
         context["last_changes_url"] = urlencode({"user": user.username})
-        context["user_projects"] = prefetch_project_flags(prefetch_stats(user_projects))
+        context["user_translations"] = prefetch_stats(user_translations)
         context["owned_projects"] = prefetch_project_flags(
             prefetch_stats(
                 user.owned_projects.filter(id__in=allowed_project_ids).order()
@@ -650,6 +671,7 @@ class UserPage(UpdateView):
             )
         )
         context["user_languages"] = user.profile.languages.all()[:7]
+        context["group_form"] = self.group_form or GroupAddForm()
         return context
 
 
@@ -1308,24 +1330,6 @@ def unsubscribe(request):
 def saml_metadata(request):
     if "social_core.backends.saml.SAMLAuth" not in settings.AUTHENTICATION_BACKENDS:
         raise Http404
-
-    # Generate configuration
-    settings.SOCIAL_AUTH_SAML_SP_ENTITY_ID = get_site_url(
-        reverse("social:saml-metadata")
-    )
-    settings.SOCIAL_AUTH_SAML_ORG_INFO = {
-        "en-US": {
-            "name": "weblate",
-            "displayname": settings.SITE_TITLE,
-            "url": get_site_url("/"),
-        }
-    }
-    admin_contact = {
-        "givenName": settings.ADMINS[0][0],
-        "emailAddress": settings.ADMINS[0][1],
-    }
-    settings.SOCIAL_AUTH_SAML_TECHNICAL_CONTACT = admin_contact
-    settings.SOCIAL_AUTH_SAML_SUPPORT_CONTACT = admin_contact
 
     # Generate metadata
     complete_url = reverse("social:complete", args=("saml",))

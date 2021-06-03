@@ -1,4 +1,4 @@
-/*! @sentry/browser 6.3.5 (3f7be6d) | https://github.com/getsentry/sentry-javascript */
+/*! @sentry/browser 6.5.1 (66b41d4) | https://github.com/getsentry/sentry-javascript */
 var Sentry = (function (exports) {
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -111,6 +111,15 @@ var Sentry = (function (exports) {
         /** JSDoc */
         SessionStatus["Abnormal"] = "abnormal";
     })(SessionStatus || (SessionStatus = {}));
+    var RequestSessionStatus;
+    (function (RequestSessionStatus) {
+        /** JSDoc */
+        RequestSessionStatus["Ok"] = "ok";
+        /** JSDoc */
+        RequestSessionStatus["Errored"] = "errored";
+        /** JSDoc */
+        RequestSessionStatus["Crashed"] = "crashed";
+    })(RequestSessionStatus || (RequestSessionStatus = {}));
 
     /** JSDoc */
     (function (Severity) {
@@ -962,12 +971,14 @@ var Sentry = (function (exports) {
     }
 
     /**
-     * Wrap a given object method with a higher-order function
+     * Replace a method in an object with a wrapped version of itself.
      *
      * @param source An object that contains a method to be wrapped.
-     * @param name A name of method to be wrapped.
-     * @param replacementFactory A function that should be used to wrap a given method, returning the wrapped method which
-     * will be substituted in for `source[name]`.
+     * @param name The name of the method to be wrapped.
+     * @param replacementFactory A higher-order function that takes the original version of the given method and returns a
+     * wrapped version. Note: The function returned by `replacementFactory` needs to be a non-arrow function, in order to
+     * preserve the correct value of `this`, and the original method must be called using `origMethod.call(this, <other
+     * args>)` or `origMethod.apply(this, [<other args>])` (rather than being called directly), again to preserve `this`.
      * @returns void
      */
     function fill(source, name, replacementFactory) {
@@ -1962,7 +1973,7 @@ var Sentry = (function (exports) {
                     return;
                 }
                 if (isThenable(value)) {
-                    value.then(_this._resolve, _this._reject);
+                    void value.then(_this._resolve, _this._reject);
                     return;
                 }
                 _this._state = state;
@@ -2033,7 +2044,7 @@ var Sentry = (function (exports) {
                 var counter = collection.length;
                 var resolvedCollection = [];
                 collection.forEach(function (item, index) {
-                    SyncPromise.resolve(item)
+                    void SyncPromise.resolve(item)
                         .then(function (value) {
                         resolvedCollection[index] = value;
                         counter -= 1;
@@ -2150,7 +2161,7 @@ var Sentry = (function (exports) {
             if (this._buffer.indexOf(task) === -1) {
                 this._buffer.push(task);
             }
-            task
+            void task
                 .then(function () { return _this.remove(task); })
                 .then(null, function () {
                 return _this.remove(task).then(null, function () {
@@ -2190,7 +2201,7 @@ var Sentry = (function (exports) {
                         resolve(false);
                     }
                 }, timeout);
-                SyncPromise.all(_this._buffer)
+                void SyncPromise.all(_this._buffer)
                     .then(function () {
                     clearTimeout(capturedSetTimeout);
                     resolve(true);
@@ -2373,6 +2384,7 @@ var Sentry = (function (exports) {
                 newScope._transactionName = scope._transactionName;
                 newScope._fingerprint = scope._fingerprint;
                 newScope._eventProcessors = __spread(scope._eventProcessors);
+                newScope._requestSession = scope._requestSession;
             }
             return newScope;
         };
@@ -2406,6 +2418,19 @@ var Sentry = (function (exports) {
          */
         Scope.prototype.getUser = function () {
             return this._user;
+        };
+        /**
+         * @inheritDoc
+         */
+        Scope.prototype.getRequestSession = function () {
+            return this._requestSession;
+        };
+        /**
+         * @inheritDoc
+         */
+        Scope.prototype.setRequestSession = function (requestSession) {
+            this._requestSession = requestSession;
+            return this;
         };
         /**
          * @inheritDoc
@@ -2562,6 +2587,9 @@ var Sentry = (function (exports) {
                 if (captureContext._fingerprint) {
                     this._fingerprint = captureContext._fingerprint;
                 }
+                if (captureContext._requestSession) {
+                    this._requestSession = captureContext._requestSession;
+                }
             }
             else if (isPlainObject(captureContext)) {
                 // eslint-disable-next-line no-param-reassign
@@ -2578,6 +2606,9 @@ var Sentry = (function (exports) {
                 if (captureContext.fingerprint) {
                     this._fingerprint = captureContext.fingerprint;
                 }
+                if (captureContext.requestSession) {
+                    this._requestSession = captureContext.requestSession;
+                }
             }
             return this;
         };
@@ -2593,6 +2624,7 @@ var Sentry = (function (exports) {
             this._level = undefined;
             this._transactionName = undefined;
             this._fingerprint = undefined;
+            this._requestSession = undefined;
             this._span = undefined;
             this._session = undefined;
             this._notifyScopeListeners();
@@ -2745,107 +2777,6 @@ var Sentry = (function (exports) {
     }
 
     /**
-     * @inheritdoc
-     */
-    var Session = /** @class */ (function () {
-        function Session(context) {
-            this.errors = 0;
-            this.sid = uuid4();
-            this.timestamp = Date.now();
-            this.started = Date.now();
-            this.duration = 0;
-            this.status = SessionStatus.Ok;
-            this.init = true;
-            if (context) {
-                this.update(context);
-            }
-        }
-        /** JSDoc */
-        // eslint-disable-next-line complexity
-        Session.prototype.update = function (context) {
-            if (context === void 0) { context = {}; }
-            if (context.user) {
-                if (context.user.ip_address) {
-                    this.ipAddress = context.user.ip_address;
-                }
-                if (!context.did) {
-                    this.did = context.user.id || context.user.email || context.user.username;
-                }
-            }
-            this.timestamp = context.timestamp || Date.now();
-            if (context.sid) {
-                // Good enough uuid validation. — Kamil
-                this.sid = context.sid.length === 32 ? context.sid : uuid4();
-            }
-            if (context.init !== undefined) {
-                this.init = context.init;
-            }
-            if (context.did) {
-                this.did = "" + context.did;
-            }
-            if (typeof context.started === 'number') {
-                this.started = context.started;
-            }
-            if (typeof context.duration === 'number') {
-                this.duration = context.duration;
-            }
-            else {
-                this.duration = this.timestamp - this.started;
-            }
-            if (context.release) {
-                this.release = context.release;
-            }
-            if (context.environment) {
-                this.environment = context.environment;
-            }
-            if (context.ipAddress) {
-                this.ipAddress = context.ipAddress;
-            }
-            if (context.userAgent) {
-                this.userAgent = context.userAgent;
-            }
-            if (typeof context.errors === 'number') {
-                this.errors = context.errors;
-            }
-            if (context.status) {
-                this.status = context.status;
-            }
-        };
-        /** JSDoc */
-        Session.prototype.close = function (status) {
-            if (status) {
-                this.update({ status: status });
-            }
-            else if (this.status === SessionStatus.Ok) {
-                this.update({ status: SessionStatus.Exited });
-            }
-            else {
-                this.update();
-            }
-        };
-        /** JSDoc */
-        Session.prototype.toJSON = function () {
-            return dropUndefinedKeys({
-                sid: "" + this.sid,
-                init: this.init,
-                started: new Date(this.started).toISOString(),
-                timestamp: new Date(this.timestamp).toISOString(),
-                status: this.status,
-                errors: this.errors,
-                did: typeof this.did === 'number' || typeof this.did === 'string' ? "" + this.did : undefined,
-                duration: this.duration,
-                attrs: dropUndefinedKeys({
-                    release: this.release,
-                    environment: this.environment,
-                    ip_address: this.ipAddress,
-                    user_agent: this.userAgent,
-                }),
-            });
-        };
-        return Session;
-    }());
-
-    /**
      * API compatibility version of this hub.
      *
      * WARNING: This number should only be increased when the global interface
@@ -2853,7 +2784,7 @@ var Sentry = (function (exports) {
      *
      * @hidden
      */
-    var API_VERSION = 3;
+    var API_VERSION = 4;
     /**
      * Default maximum number of breadcrumbs added to an event. Can be overwritten
      * with {@link Options.maxBreadcrumbs}.
@@ -3235,7 +3166,13 @@ var Sentry = (function (exports) {
         };
         return Hub;
     }());
-    /** Returns the global shim registry. */
+    /**
+     * Returns the global shim registry.
+     *
+     * FIXME: This function is problematic, because despite always returning a valid Carrier,
+     * it has an optional `__SENTRY__` property, which then in turn requires us to always perform an unnecessary check
+     * at the call-site. We always access the carrier through this function, so we can guarantee that `__SENTRY__` is there.
+     **/
     function getMainCarrier() {
         var carrier = getGlobalObject();
         carrier.__SENTRY__ = carrier.__SENTRY__ || {
@@ -3334,6 +3271,118 @@ var Sentry = (function (exports) {
         carrier.__SENTRY__.hub = hub;
         return true;
     }
+
+    /**
+     * @inheritdoc
+     */
+    var Session = /** @class */ (function () {
+        function Session(context) {
+            this.errors = 0;
+            this.sid = uuid4();
+            this.duration = 0;
+            this.status = SessionStatus.Ok;
+            this.init = true;
+            this.ignoreDuration = false;
+            // Both timestamp and started are in seconds since the UNIX epoch.
+            var startingTime = timestampInSeconds();
+            this.timestamp = startingTime;
+            this.started = startingTime;
+            if (context) {
+                this.update(context);
+            }
+        }
+        /** JSDoc */
+        // eslint-disable-next-line complexity
+        Session.prototype.update = function (context) {
+            if (context === void 0) { context = {}; }
+            if (context.user) {
+                if (context.user.ip_address) {
+                    this.ipAddress = context.user.ip_address;
+                }
+                if (!context.did) {
+                    this.did = context.user.id || context.user.email || context.user.username;
+                }
+            }
+            this.timestamp = context.timestamp || timestampInSeconds();
+            if (context.ignoreDuration) {
+                this.ignoreDuration = context.ignoreDuration;
+            }
+            if (context.sid) {
+                // Good enough uuid validation. — Kamil
+                this.sid = context.sid.length === 32 ? context.sid : uuid4();
+            }
+            if (context.init !== undefined) {
+                this.init = context.init;
+            }
+            if (context.did) {
+                this.did = "" + context.did;
+            }
+            if (typeof context.started === 'number') {
+                this.started = context.started;
+            }
+            if (this.ignoreDuration) {
+                this.duration = undefined;
+            }
+            else if (typeof context.duration === 'number') {
+                this.duration = context.duration;
+            }
+            else {
+                var duration = this.timestamp - this.started;
+                this.duration = duration >= 0 ? duration : 0;
+            }
+            if (context.release) {
+                this.release = context.release;
+            }
+            if (context.environment) {
+                this.environment = context.environment;
+            }
+            if (context.ipAddress) {
+                this.ipAddress = context.ipAddress;
+            }
+            if (context.userAgent) {
+                this.userAgent = context.userAgent;
+            }
+            if (typeof context.errors === 'number') {
+                this.errors = context.errors;
+            }
+            if (context.status) {
+                this.status = context.status;
+            }
+        };
+        /** JSDoc */
+        Session.prototype.close = function (status) {
+            if (status) {
+                this.update({ status: status });
+            }
+            else if (this.status === SessionStatus.Ok) {
+                this.update({ status: SessionStatus.Exited });
+            }
+            else {
+                this.update();
+            }
+        };
+        /** JSDoc */
+        Session.prototype.toJSON = function () {
+            return dropUndefinedKeys({
+                sid: "" + this.sid,
+                init: this.init,
+                // Make sure that sec is converted to ms for date constructor
+                started: new Date(this.started * 1000).toISOString(),
+                timestamp: new Date(this.timestamp * 1000).toISOString(),
+                status: this.status,
+                errors: this.errors,
+                did: typeof this.did === 'number' || typeof this.did === 'string' ? "" + this.did : undefined,
+                duration: this.duration,
+                attrs: dropUndefinedKeys({
+                    release: this.release,
+                    environment: this.environment,
+                    ip_address: this.ipAddress,
+                    user_agent: this.userAgent,
+                }),
+            });
+        };
+        return Session;
+    }());
 
     /**
      * This calls a function on the current hub.
@@ -3633,36 +3682,31 @@ var Sentry = (function (exports) {
     }());
 
     var installedIntegrations = [];
+    /**
+     * @private
+     */
+    function filterDuplicates(integrations) {
+        return integrations.reduce(function (acc, integrations) {
+            if (acc.every(function (accIntegration) { return integrations.name !== accIntegration.name; })) {
+                acc.push(integrations);
+            }
+            return acc;
+        }, []);
+    }
     /** Gets integration to install */
     function getIntegrationsToSetup(options) {
         var defaultIntegrations = (options.defaultIntegrations && __spread(options.defaultIntegrations)) || [];
         var userIntegrations = options.integrations;
-        var integrations = [];
+        var integrations = __spread(filterDuplicates(defaultIntegrations));
         if (Array.isArray(userIntegrations)) {
-            var userIntegrationsNames_1 = userIntegrations.map(function (i) { return i.name; });
-            var pickedIntegrationsNames_1 = [];
-            // Leave only unique default integrations, that were not overridden with provided user integrations
-            defaultIntegrations.forEach(function (defaultIntegration) {
-                if (userIntegrationsNames_1.indexOf(defaultIntegration.name) === -1 &&
-                    pickedIntegrationsNames_1.indexOf(defaultIntegration.name) === -1) {
-                    integrations.push(defaultIntegration);
-                    pickedIntegrationsNames_1.push(defaultIntegration.name);
-                }
-            });
-            // Don't add same user integration twice
-            userIntegrations.forEach(function (userIntegration) {
-                if (pickedIntegrationsNames_1.indexOf(userIntegration.name) === -1) {
-                    integrations.push(userIntegration);
-                    pickedIntegrationsNames_1.push(userIntegration.name);
-                }
-            });
+            // Filter out integrations that are also included in user options
+            integrations = __spread(integrations.filter(function (integrations) {
+                return userIntegrations.every(function (userIntegration) { return userIntegration.name !== integrations.name; });
+            }), filterDuplicates(userIntegrations));
         }
         else if (typeof userIntegrations === 'function') {
-            integrations = userIntegrations(defaultIntegrations);
+            integrations = userIntegrations(integrations);
             integrations = Array.isArray(integrations) ? integrations : [integrations];
-        }
-        else {
-            integrations = __spread(defaultIntegrations);
         }
         // Make sure that if present, `Debug` integration will always run last
         var integrationsNames = integrations.map(function (i) { return i.name; });
@@ -4146,7 +4190,7 @@ var Sentry = (function (exports) {
         BaseClient.prototype._process = function (promise) {
             var _this = this;
             this._processing += 1;
-            promise.then(function (value) {
+            void promise.then(function (value) {
                 _this._processing -= 1;
                 return value;
             }, function (reason) {
@@ -4209,7 +4253,7 @@ var Sentry = (function (exports) {
          * @inheritDoc
          */
         BaseBackend.prototype.sendEvent = function (event) {
-            this._transport.sendEvent(event).then(null, function (reason) {
+            void this._transport.sendEvent(event).then(null, function (reason) {
                 logger.error("Error while sending event: " + reason);
             });
         };
@@ -4221,7 +4265,7 @@ var Sentry = (function (exports) {
                 logger.warn("Dropping session because custom transport doesn't implement sendSession");
                 return;
             }
-            this._transport.sendSession(session).then(null, function (reason) {
+            void this._transport.sendSession(session).then(null, function (reason) {
                 logger.error("Error while sending session: " + reason);
             });
         };
@@ -4267,12 +4311,14 @@ var Sentry = (function (exports) {
     function sessionToSentryRequest(session, api) {
         var sdkInfo = getSdkMetadataForEnvelopeHeader(api);
         var envelopeHeaders = JSON.stringify(__assign({ sent_at: new Date().toISOString() }, (sdkInfo && { sdk: sdkInfo })));
+        // I know this is hacky but we don't want to add `session` to request type since it's never rate limited
+        var type = 'aggregates' in session ? 'sessions' : 'session';
         var itemHeaders = JSON.stringify({
-            type: 'session',
+            type: type,
         });
         return {
             body: envelopeHeaders + "\n" + itemHeaders + "\n" + JSON.stringify(session),
-            type: 'session',
+            type: type,
             url: api.getEnvelopeEndpointWithUrlEncodedAuth(),
         };
     }
@@ -4325,15 +4371,17 @@ var Sentry = (function (exports) {
      * @param options Options to pass to the client.
      */
     function initAndBind(clientClass, options) {
+        var _a;
         if (options.debug === true) {
             logger.enable();
         }
         var hub = getCurrentHub();
+        (_a = hub.getScope()) === null || _a === void 0 ? void 0 : _a.update(options.initialScope);
         var client = new clientClass(options);
         hub.bindClient(client);
     }
 
-    var SDK_VERSION = '6.3.5';
+    var SDK_VERSION = '6.5.1';
 
     var originalFunctionToString;
     /** Patch toString calls to return proper name for wrapped functions */
@@ -4965,6 +5013,7 @@ var Sentry = (function (exports) {
         event: 'error',
         transaction: 'transaction',
         session: 'session',
+        attachment: 'attachment',
     };
     /** Base Transport class implementation */
     var BaseTransport = /** @class */ (function () {
@@ -5197,7 +5246,7 @@ var Sentry = (function (exports) {
                 options.headers = this.options.headers;
             }
             return this._buffer.add(new SyncPromise(function (resolve, reject) {
-                _this._fetch(sentryRequest.url, options)
+                void _this._fetch(sentryRequest.url, options)
                     .then(function (response) {
                     var headers = {
                         'x-sentry-rate-limits': response.headers.get('X-Sentry-Rate-Limits'),
@@ -6511,12 +6560,21 @@ var Sentry = (function (exports) {
         if (typeof hub.startSession !== 'function' || typeof hub.captureSession !== 'function') {
             return;
         }
-        hub.startSession();
+        // The session duration for browser sessions does not track a meaningful
+        // concept that can be used as a metric.
+        // Automatically captured sessions are akin to page views, and thus we
+        // discard their duration.
+        hub.startSession({ ignoreDuration: true });
         hub.captureSession();
         // We want to create a session for every navigation as well
         addInstrumentationHandler({
-            callback: function () {
-                hub.startSession();
+            callback: function (_a) {
+                var from = _a.from, to = _a.to;
+                // Don't create an additional session for the initial route or if the location did not change
+                if (from === undefined || from === to) {
+                    return;
+                }
+                hub.startSession({ ignoreDuration: true });
                 hub.captureSession();
             },
             type: 'history',

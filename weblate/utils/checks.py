@@ -437,11 +437,7 @@ def check_perms(app_configs=None, **kwargs):
 
 def check_errors(app_configs=None, **kwargs):
     """Check that error collection is configured."""
-    if (
-        hasattr(settings, "ROLLBAR")
-        or hasattr(settings, "RAVEN_CONFIG")
-        or settings.SENTRY_DSN
-    ):
+    if hasattr(settings, "ROLLBAR") or settings.SENTRY_DSN:
         return []
     return [
         weblate_check(
@@ -474,7 +470,7 @@ def check_diskspace(app_configs=None, **kwargs):
 
 
 # Python Package Index URL
-PYPI = "https://pypi.org/pypi/Weblate/json"
+PYPI = "https://pypi.org/pypi/weblate/json"
 
 # Cache to store fetched PyPI version
 CACHE_KEY = "version-check"

@@ -101,12 +101,15 @@ Turn on this service by adding ``weblate.machinery.deepl.DeepLTranslation`` to
 
    In case you have subscription for CAT tools, you are supposed to use "v1
    API" instead of default "v2" used by Weblate (it is not really an API
-   version in this case). You can toggle this by :setting:`MT_DEEPL_API_VERSION`.
+   version in this case).
+   In case you are on a free instead of a paid plan, you have to use
+   ``https://api-free.deepl.com/`` instead of ``https://api.deepl.com/``
+   You can adjust both parameters by :setting:`MT_DEEPL_API_URL`.
 
 .. seealso::
 
     :setting:`MT_DEEPL_KEY`,
-    :setting:`MT_DEEPL_API_VERSION`,
+    :setting:`MT_DEEPL_API_URL`,
     `DeepL website <https://www.deepl.com/>`_,
     `DeepL pricing <https://www.deepl.com/pro>`_,
     `DeepL API documentation <https://www.deepl.com/api.html>`_
@@ -230,7 +233,7 @@ Turn this service on by adding ``weblate.machinery.modernmt.ModernMTTranslation`
 
 .. seealso::
 
-    `ModernMT API <https://www.modernmt.com/api/translate/>`_,
+    `ModernMT API <https://www.modernmt.com/api/#translation>`_,
     :setting:`MT_MODERNMT_KEY`,
     :setting:`MT_MODERNMT_URL`
 
@@ -262,7 +265,7 @@ NetEase Sight API machine translation
 
 .. versionadded:: 3.3
 
-Machine translation service provided by Netease.
+Machine translation service provided by NetEase.
 
 This service uses an API, and you need to obtain key and secret from NetEase.
 
@@ -274,7 +277,7 @@ Turn on this service by adding ``weblate.machinery.youdao.NeteaseSightTranslatio
 
     :setting:`MT_NETEASE_KEY`,
     :setting:`MT_NETEASE_SECRET`
-    `Netease Sight Translation Platform <https://sight.youdao.com/>`_
+    `NetEase Sight Translation Platform <https://sight.youdao.com/>`_
 
 .. _tmserver:
 
@@ -386,12 +389,12 @@ SAP Translation Hub
 
 Machine translation service provided by SAP.
 
-You need to have a SAP account (and enabled the SAP Translation Hub in the SAP Cloud
+You need to have a SAP account (and the SAP Translation Hub enabled in the SAP Cloud
 Platform) to use this service.
 
 Turn on this service by adding ``weblate.machinery.saptranslationhub.SAPTranslationHub`` to
-:setting:`MT_SERVICES` and set the appropriate access to either
-sandbox or the productive API.
+:setting:`MT_SERVICES` and set the appropriate access to either the
+sandbox or the production API.
 
 .. note::
 
@@ -420,5 +423,5 @@ languages using ``dictionary`` Python module:
 .. literalinclude:: ../../weblate/examples/mt_service.py
     :language: python
 
-You can list own class in :setting:`MT_SERVICES` and Weblate
+You can list your own class in :setting:`MT_SERVICES` and Weblate
 will start using that.
