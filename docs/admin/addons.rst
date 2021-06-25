@@ -14,7 +14,7 @@ translation component.
    You can also configure add-ons using :ref:`API <addons-api>`,
    :setting:`DEFAULT_ADDONS`, or :djadmin:`install_addon`.
 
-.. image:: /images/addons.png
+.. image:: /screenshots/addons.png
 
 Built-in add-ons
 ++++++++++++++++
@@ -186,7 +186,7 @@ the add-on help section.
 Once you hit :guilabel:`Save`, a preview of matching components will be presented,
 from where you can check whether the configuration actually matches your needs:
 
-.. image:: /images/addon-discovery.png
+.. image:: /screenshots/addon-discovery.png
 
 .. hint::
 
@@ -379,6 +379,18 @@ is also possible.
    You can use real languages for testing, but there are dedicated
    pseudolocales available in Weblate - `en_XA` and `ar_XB`.
 
+.. hint::
+
+   You can use this add-on to start translation to a new locale of an
+   existing language or similar language.
+   Once you add the translation to the component, follow to the add-on.
+   *Example:* If you have `fr` and want to start `fr_CA` translation, simply set
+   `fr` as the source, `fr_CA` as the target, and leave the prefix and suffix blank.
+
+   Uninstall the add-on once you have the new translation filled to prevent Weblate
+   from changing the translations made after the copying.
+
+
 .. _addon-weblate.gettext.authors:
 
 Contributors in comment
@@ -494,7 +506,7 @@ Squash Git commits
                 +---------------------+--------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
                 | ``append_trailers`` | Append trailers to squashed commit message | Trailer lines are lines that look similar to RFC 822 e-mail headers, at the end of the otherwise free-form part of a commit message, such as 'Co-authored-by: …'. |
                 +---------------------+--------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-                | ``commit_message``  | None                                       | This commit message will be used instead of the combined commit messages from the squashed commits.                                                               |
+                | ``commit_message``  | Commit message                             | This commit message will be used instead of the combined commit messages from the squashed commits.                                                               |
                 +---------------------+--------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Squash Git commits prior to pushing changes.

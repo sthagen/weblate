@@ -138,7 +138,10 @@ class GitRepository(Repository):
             if self.needs_commit():
                 self.execute(["reset", "--hard"])
         else:
-            self.execute(["rebase", self.get_remote_branch_name()])
+            cmd = ["rebase"]
+            cmd.extend(self.get_gpg_sign_args())
+            cmd.append(self.get_remote_branch_name())
+            self.execute(cmd)
         self.clean_revision_cache()
 
     def has_git_file(self, name):
@@ -200,7 +203,7 @@ class GitRepository(Repository):
         """Check whether repository needs commit."""
         cmd = ["--no-optional-locks", "status", "--porcelain"]
         if filenames:
-            cmd.extend(["--ignored=matching", "--"])
+            cmd.extend(["--untracked-files=all", "--ignored=traditional", "--"])
             cmd.extend(filenames)
         with self.lock:
             status = self.execute(cmd, merge_err=False)
@@ -276,7 +279,7 @@ class GitRepository(Repository):
         author: Optional[str] = None,
         timestamp: Optional[datetime] = None,
         files: Optional[List[str]] = None,
-    ):
+    ) -> bool:
         """Create new revision."""
         # Add files one by one, this has to deal with
         # removed, untracked and non existing files
@@ -292,7 +295,7 @@ class GitRepository(Repository):
         # Bail out if there is nothing to commit.
         # This can easily happen with squashing and reverting changes.
         if not self.needs_commit(files):
-            return
+            return False
 
         # Build the commit command
         cmd = ["commit", "--file", "-"]
@@ -306,6 +309,8 @@ class GitRepository(Repository):
         self.execute(cmd, stdin=message)
         # Clean cache
         self.clean_revision_cache()
+
+        return True
 
     def remove(self, files: List[str], message: str, author: Optional[str] = None):
         """Remove files and creates new revision."""
@@ -634,7 +639,10 @@ class GitMergeRequestBase(GitForcePushRepository):
             # Needed for compatibility with original merge code
             self.execute(["checkout", self.branch])
         else:
-            self.execute(["merge", f"origin/{self.branch}"])
+            cmd = ["merge"]
+            cmd.extend(self.get_gpg_sign_args())
+            cmd.append(self.get_remote_branch_name())
+            self.execute(cmd)
         self.clean_revision_cache()
 
     def get_api_url(self) -> Tuple[str, str, str]:

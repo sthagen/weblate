@@ -426,8 +426,7 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
         verbose_name=gettext_lazy("Translation flags"),
         default="",
         help_text=gettext_lazy(
-            "Additional comma-separated flags to influence quality checks. "
-            "Possible values can be found in the documentation."
+            "Additional comma-separated flags to influence Weblate behavior."
         ),
         validators=[validate_check_flags],
         blank=True,
@@ -644,8 +643,8 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
     class Meta:
         unique_together = (("project", "name"), ("project", "slug"))
         app_label = "trans"
-        verbose_name = gettext_lazy("Component")
-        verbose_name_plural = gettext_lazy("Components")
+        verbose_name = "Component"
+        verbose_name_plural = "Components"
 
     def __str__(self):
         return "/".join((str(self.project), self.name))
@@ -757,6 +756,7 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
         self.acting_user = None
         self.batch_checks = False
         self.batched_checks = set()
+        self.needs_variants_update = False
 
     def generate_changes(self, old):
         def getvalue(base, attribute):
@@ -1093,7 +1093,11 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
         """Return latest locally known remote commit."""
         if self.vcs == "local" or not self.local_revision:
             return None
-        return self.repository.get_revision_info(self.local_revision)
+        try:
+            return self.repository.get_revision_info(self.local_revision)
+        except RepositoryException:
+            self.store_local_revision()
+            return self.repository.get_revision_info(self.local_revision)
 
     @perform_on_link
     def get_repo_url(self):
@@ -1523,12 +1527,13 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
             return True
 
     @perform_on_link
+    @transaction.atomic
     def do_file_sync(self, request=None):
         from weblate.trans.models import Unit
 
         Unit.objects.filter(translation__component=self).exclude(
             translation__language_id=self.source_language_id
-        ).update(pending=True)
+        ).select_for_update().update(pending=True)
         return self.commit_pending("file-sync", request.user if request else None)
 
     def get_repo_link_url(self):
@@ -1556,19 +1561,20 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
         components = {}
 
         # Commit pending changes
-        for translation in translations:
-            if translation.component_id == self.id:
-                translation.component = self
-            if translation.component.linked_component_id == self.id:
-                translation.component.linked_component = self
-            translation.commit_pending(
-                reason, user, skip_push=True, force=True, signals=False
-            )
-            components[translation.component.pk] = translation.component
+        with self.repository.lock:
+            for translation in translations:
+                if translation.component_id == self.id:
+                    translation.component = self
+                if translation.component.linked_component_id == self.id:
+                    translation.component.linked_component = self
+                translation.commit_pending(reason, user, skip_push=True, signals=False)
+                components[translation.component.pk] = translation.component
 
         # Fire postponed post commit signals
         for component in components.values():
             vcs_post_commit.send(sender=self.__class__, component=component)
+            component.store_local_revision()
+
         # Push if enabled
         if not skip_push:
             self.push_if_needed()
@@ -1588,10 +1594,6 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
         message: Optional[str] = None,
     ):
         """Commits files to the repository."""
-        # Is there something to commit?
-        if not self.repository.needs_commit(files):
-            return False
-
         if message is None:
             # Handle context
             context = {"component": self, "author": author}
@@ -1602,11 +1604,14 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
             message = render_template(template, **context)
 
         # Actual commit
-        self.repository.commit(message, author, timestamp, files)
+        if not self.repository.commit(message, author, timestamp, files):
+            return False
 
         # Send post commit signal
         if signals:
             vcs_post_commit.send(sender=self.__class__, component=self)
+
+        self.store_local_revision()
 
         # Push if we should
         if not skip_push:
@@ -1633,6 +1638,15 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
                 user=self.acting_user,
             )
         raise FileParseError(error_message)
+
+    def store_local_revision(self):
+        """Store current revision in the database."""
+        self.local_revision = self.repository.last_revision
+        # Avoid using using save as that does complex things and we
+        # just want to update the database
+        Component.objects.filter(pk=self.pk).update(
+            local_revision=self.repository.last_revision
+        )
 
     @perform_on_link
     def update_branch(
@@ -1701,11 +1715,7 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
                 return False
 
             if self.id:
-                # Store current revision in the database
-                self.local_revision = new_head
-                # Avoid using using save as that does complex things and we
-                # just want to update the database
-                Component.objects.filter(pk=self.pk).update(local_revision=new_head)
+                self.store_local_revision()
 
                 # Record change
                 Change.objects.create(
@@ -1993,10 +2003,9 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
                         "removing stale translations: %s",
                         ",".join(trans.language.code for trans in todelete),
                     )
-                    # Invalidate stats (most importantly to invalidate parent stats)
-                    for translation in todelete:
-                        translation.invalidate_cache()
                     todelete.delete()
+                    # Indicate a change to invalidate stats
+                    was_change = True
 
         self.update_import_alerts()
 
@@ -2036,7 +2045,8 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
             translation.notify_new(request)
 
         if was_change:
-            self.update_variants()
+            if self.needs_variants_update:
+                self.update_variants()
             component_post_update.send(sender=self.__class__, component=self)
             self.schedule_sync_terminology()
 
@@ -2644,6 +2654,7 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
     def update_alerts(self):  # noqa: C901
         if (
             self.project.access_control == self.project.ACCESS_PUBLIC
+            and settings.LICENSE_REQUIRED
             and not self.license
             and not settings.LOGIN_REQUIRED_URLS
             and (settings.LICENSE_FILTER is None or settings.LICENSE_FILTER)
@@ -3051,7 +3062,7 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
 
     def schedule_sync_terminology(self):
         """Trigger terminology sync in the background."""
-        from weblate.glossary.tasks import sync_terminology
+        from weblate.glossary.tasks import sync_glossary_languages, sync_terminology
 
         if self.is_glossary:
             if settings.CELERY_TASK_ALWAYS_EAGER:
@@ -3059,6 +3070,16 @@ class Component(FastDeleteModelMixin, models.Model, URLMixin, PathMixin, CacheKe
                 sync_terminology(self.pk, component=self)
             else:
                 transaction.on_commit(lambda: sync_terminology.delay(self.pk))
+
+        else:
+            for glossary in self.project.glossaries:
+                if settings.CELERY_TASK_ALWAYS_EAGER:
+                    # Execute directly to avoid locking issues
+                    sync_glossary_languages(glossary.pk, component=glossary)
+                else:
+                    transaction.on_commit(
+                        lambda: sync_glossary_languages.delay(glossary.pk)
+                    )
 
     def get_unused_enforcements(self):
         from weblate.trans.models import Unit

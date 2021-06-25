@@ -1008,9 +1008,9 @@ class ContextForm(forms.ModelForm):
         }
 
     doc_links = {
-        "explanation": ("admin/translating", "additional"),
+        "explanation": ("admin/translating", "additional-explanation"),
         "labels": ("devel/translations", "labels"),
-        "extra_flags": ("admin/translating", "additional"),
+        "extra_flags": ("admin/translating", "additional-flags"),
     }
 
     def get_field_doc(self, field):
@@ -2058,6 +2058,7 @@ class NewBilingualSourceUnitForm(NewUnitBaseForm):
     def __init__(self, translation, user, *args, **kwargs):
         super().__init__(translation, user, *args, **kwargs)
         self.fields["context"].widget.attrs["tabindex"] = 99
+        self.fields["context"].label = translation.component.context_label
         self.fields["source"].widget.attrs["tabindex"] = 100
         self.fields["source"].widget.profile = user.profile
         self.fields["source"].initial = Unit(

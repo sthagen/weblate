@@ -32,6 +32,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.checks import Critical, Error, Info
 from django.core.mail import get_connection
+from django.db import DatabaseError
 
 from weblate.utils.celery import get_queue_stats
 from weblate.utils.data import data_dir
@@ -102,6 +103,8 @@ DOC_LINKS = {
     "weblate.E034": ("admin/install", "celery"),
     "weblate.C035": ("vcs",),
     "weblate.C036": ("admin/optionals", "gpg-sign"),
+    "weblate.C037": ("admin/install", "production-database"),
+    "weblate.C038": ("admin/install", "production-database"),
 }
 
 
@@ -263,16 +266,50 @@ def check_celery(app_configs, **kwargs):
     return errors
 
 
+def measure_database_latency():
+    from weblate.trans.models import Project
+
+    start = time.time()
+    Project.objects.exists()
+    return round(1000 * (time.time() - start))
+
+
+def measure_cache_latency():
+    start = time.time()
+    cache.get("celery_loaded")
+    return round(1000 * (time.time() - start))
+
+
 def check_database(app_configs, **kwargs):
-    if using_postgresql():
-        return []
-    return [
-        weblate_check(
-            "weblate.E006",
-            "Weblate performs best with PostgreSQL, consider migrating to it.",
-            Info,
+    errors = []
+    if not using_postgresql():
+        errors.append(
+            weblate_check(
+                "weblate.E006",
+                "Weblate performs best with PostgreSQL, consider migrating to it.",
+                Info,
+            )
         )
-    ]
+
+    try:
+        delta = measure_database_latency()
+        if delta > 100:
+            errors.append(
+                weblate_check(
+                    "weblate.C038",
+                    f"The database seems slow, the query took {delta} miliseconds",
+                )
+            )
+
+    except DatabaseError as error:
+        errors.append(
+            weblate_check(
+                "weblate.C037",
+                f"Failed to connect to the database: {error}",
+            )
+        )
+
+    return errors
 
 
 def check_cache(app_configs, **kwargs):

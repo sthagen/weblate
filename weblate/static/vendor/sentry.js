@@ -1,4 +1,4 @@
-/*! @sentry/browser 6.5.1 (66b41d4) | https://github.com/getsentry/sentry-javascript */
+/*! @sentry/browser 6.7.2 (35498a6) | https://github.com/getsentry/sentry-javascript */
 var Sentry = (function (exports) {
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -370,7 +370,7 @@ var Sentry = (function (exports) {
      * e.g. [HTMLElement] => body > div > input#foo.btn[name=baz]
      * @returns generated DOM path
      */
-    function htmlTreeAsString(elem) {
+    function htmlTreeAsString(elem, keyAttr) {
         // try/catch both:
         // - accessing event.target (see getsentry/raven-js#838, #768)
         // - `htmlTreeAsString` because it's complex, and just accessing the DOM incorrectly
@@ -387,7 +387,7 @@ var Sentry = (function (exports) {
             var nextStr = void 0;
             // eslint-disable-next-line no-plusplus
             while (currentElem && height++ < MAX_TRAVERSE_HEIGHT) {
-                nextStr = _htmlElementAsString(currentElem);
+                nextStr = _htmlElementAsString(currentElem, keyAttr);
                 // bail out if
                 // - nextStr is the 'html' element
                 // - the length of the string that would be created exceeds MAX_OUTPUT_LEN
@@ -410,7 +410,7 @@ var Sentry = (function (exports) {
      * e.g. [HTMLElement] => input#foo.btn[name=baz]
      * @returns generated DOM path
      */
-    function _htmlElementAsString(el) {
+    function _htmlElementAsString(el, keyAttr) {
         var elem = el;
         var out = [];
         var className;
@@ -422,15 +422,21 @@ var Sentry = (function (exports) {
             return '';
         }
         out.push(elem.tagName.toLowerCase());
-        if (elem.id) {
-            out.push("#" + elem.id);
+        var keyAttrValue = keyAttr ? elem.getAttribute(keyAttr) : null;
+        if (keyAttrValue) {
+            out.push("[" + keyAttr + "=\"" + keyAttrValue + "\"]");
         }
-        // eslint-disable-next-line prefer-const
-        className = elem.className;
-        if (className && isString(className)) {
-            classes = className.split(/\s+/);
-            for (i = 0; i < classes.length; i++) {
-                out.push("." + classes[i]);
+        else {
+            if (elem.id) {
+                out.push("#" + elem.id);
+            }
+            // eslint-disable-next-line prefer-const
+            className = elem.className;
+            if (className && isString(className)) {
+                classes = className.split(/\s+/);
+                for (i = 0; i < classes.length; i++) {
+                    out.push("." + classes[i]);
+                }
             }
         }
         var allowedAttrs = ['type', 'name', 'title', 'alt'];
@@ -2309,7 +2315,7 @@ var Sentry = (function (exports) {
         // performance.timing.navigationStart, which results in poor results in performance data. We only treat time origin
         // data as reliable if they are within a reasonable threshold of the current time.
         var performance = getGlobalObject().performance;
-        if (!performance) {
+        if (!performance || !performance.now) {
             return undefined;
         }
         var threshold = 3600 * 1000;
@@ -2343,6 +2349,11 @@ var Sentry = (function (exports) {
         return dateNow;
     })();
 
+    /**
+     * Absolute maximum number of breadcrumbs added to an event.
+     * The `maxBreadcrumbs` option cannot be higher than this value.
+     */
+    var MAX_BREADCRUMBS = 100;
     /**
      * Holds additional event information. {@link Scope.applyToEvent} will be
      * called by the client before an event will be sent.
@@ -2634,11 +2645,13 @@ var Sentry = (function (exports) {
          * @inheritDoc
          */
         Scope.prototype.addBreadcrumb = function (breadcrumb, maxBreadcrumbs) {
+            var maxCrumbs = typeof maxBreadcrumbs === 'number' ? Math.min(maxBreadcrumbs, MAX_BREADCRUMBS) : MAX_BREADCRUMBS;
+            // No data has been changed, so don't notify scope listeners
+            if (maxCrumbs <= 0) {
+                return this;
+            }
             var mergedBreadcrumb = __assign({ timestamp: dateTimestampInSeconds() }, breadcrumb);
-            this._breadcrumbs =
-                maxBreadcrumbs !== undefined && maxBreadcrumbs >= 0
-                    ? __spread(this._breadcrumbs, [mergedBreadcrumb]).slice(-maxBreadcrumbs)
-                    : __spread(this._breadcrumbs, [mergedBreadcrumb]);
+            this._breadcrumbs = __spread(this._breadcrumbs, [mergedBreadcrumb]).slice(-maxCrumbs);
             this._notifyScopeListeners();
             return this;
         };
@@ -2707,12 +2720,12 @@ var Sentry = (function (exports) {
                 else {
                     var result = processor(__assign({}, event), hint);
                     if (isThenable(result)) {
-                        result
+                        void result
                             .then(function (final) { return _this._notifyEventProcessors(processors, final, hint, index + 1).then(resolve); })
                             .then(null, reject);
                     }
                     else {
-                        _this._notifyEventProcessors(processors, result, hint, index + 1)
+                        void _this._notifyEventProcessors(processors, result, hint, index + 1)
                             .then(resolve)
                             .then(null, reject);
                     }
@@ -2777,6 +2790,118 @@ var Sentry = (function (exports) {
     }
 
     /**
+     * @inheritdoc
+     */
+    var Session = /** @class */ (function () {
+        function Session(context) {
+            this.errors = 0;
+            this.sid = uuid4();
+            this.duration = 0;
+            this.status = SessionStatus.Ok;
+            this.init = true;
+            this.ignoreDuration = false;
+            // Both timestamp and started are in seconds since the UNIX epoch.
+            var startingTime = timestampInSeconds();
+            this.timestamp = startingTime;
+            this.started = startingTime;
+            if (context) {
+                this.update(context);
+            }
+        }
+        /** JSDoc */
+        // eslint-disable-next-line complexity
+        Session.prototype.update = function (context) {
+            if (context === void 0) { context = {}; }
+            if (context.user) {
+                if (!this.ipAddress && context.user.ip_address) {
+                    this.ipAddress = context.user.ip_address;
+                }
+                if (!this.did && !context.did) {
+                    this.did = context.user.id || context.user.email || context.user.username;
+                }
+            }
+            this.timestamp = context.timestamp || timestampInSeconds();
+            if (context.ignoreDuration) {
+                this.ignoreDuration = context.ignoreDuration;
+            }
+            if (context.sid) {
+                // Good enough uuid validation. — Kamil
+                this.sid = context.sid.length === 32 ? context.sid : uuid4();
+            }
+            if (context.init !== undefined) {
+                this.init = context.init;
+            }
+            if (!this.did && context.did) {
+                this.did = "" + context.did;
+            }
+            if (typeof context.started === 'number') {
+                this.started = context.started;
+            }
+            if (this.ignoreDuration) {
+                this.duration = undefined;
+            }
+            else if (typeof context.duration === 'number') {
+                this.duration = context.duration;
+            }
+            else {
+                var duration = this.timestamp - this.started;
+                this.duration = duration >= 0 ? duration : 0;
+            }
+            if (context.release) {
+                this.release = context.release;
+            }
+            if (context.environment) {
+                this.environment = context.environment;
+            }
+            if (!this.ipAddress && context.ipAddress) {
+                this.ipAddress = context.ipAddress;
+            }
+            if (!this.userAgent && context.userAgent) {
+                this.userAgent = context.userAgent;
+            }
+            if (typeof context.errors === 'number') {
+                this.errors = context.errors;
+            }
+            if (context.status) {
+                this.status = context.status;
+            }
+        };
+        /** JSDoc */
+        Session.prototype.close = function (status) {
+            if (status) {
+                this.update({ status: status });
+            }
+            else if (this.status === SessionStatus.Ok) {
+                this.update({ status: SessionStatus.Exited });
+            }
+            else {
+                this.update();
+            }
+        };
+        /** JSDoc */
+        Session.prototype.toJSON = function () {
+            return dropUndefinedKeys({
+                sid: "" + this.sid,
+                init: this.init,
+                // Make sure that sec is converted to ms for date constructor
+                started: new Date(this.started * 1000).toISOString(),
+                timestamp: new Date(this.timestamp * 1000).toISOString(),
+                status: this.status,
+                errors: this.errors,
+                did: typeof this.did === 'number' || typeof this.did === 'string' ? "" + this.did : undefined,
+                duration: this.duration,
+                attrs: dropUndefinedKeys({
+                    release: this.release,
+                    environment: this.environment,
+                    ip_address: this.ipAddress,
+                    user_agent: this.userAgent,
+                }),
+            });
+        };
+        return Session;
+    }());
+
+    /**
      * API compatibility version of this hub.
      *
      * WARNING: This number should only be increased when the global interface
@@ -2790,11 +2915,6 @@ var Sentry = (function (exports) {
      * with {@link Options.maxBreadcrumbs}.
      */
     var DEFAULT_BREADCRUMBS = 100;
-    /**
-     * Absolute maximum number of breadcrumbs added to an event. The
-     * `maxBreadcrumbs` option cannot be higher than this value.
-     */
-    var MAX_BREADCRUMBS = 100;
     /**
      * @inheritDoc
      */
@@ -2967,7 +3087,7 @@ var Sentry = (function (exports) {
                 : mergedBreadcrumb;
             if (finalBreadcrumb === null)
                 return;
-            scope.addBreadcrumb(finalBreadcrumb, Math.min(maxBreadcrumbs, MAX_BREADCRUMBS));
+            scope.addBreadcrumb(finalBreadcrumb, maxBreadcrumbs);
         };
         /**
          * @inheritDoc
@@ -3100,8 +3220,11 @@ var Sentry = (function (exports) {
         Hub.prototype.startSession = function (context) {
             var _a = this.getStackTop(), scope = _a.scope, client = _a.client;
             var _b = (client && client.getOptions()) || {}, release = _b.release, environment = _b.environment;
-            var session = new Session(__assign(__assign({ release: release,
-                environment: environment }, (scope && { user: scope.getUser() })), context));
+            // Will fetch userAgent if called from browser sdk
+            var global = getGlobalObject();
+            var userAgent = (global.navigator || {}).userAgent;
+            var session = new Session(__assign(__assign(__assign({ release: release,
+                environment: environment }, (scope && { user: scope.getUser() })), (userAgent && { userAgent: userAgent })), context));
             if (scope) {
                 // End existing session if there's one
                 var currentSession = scope.getSession && scope.getSession();
@@ -3271,118 +3394,6 @@ var Sentry = (function (exports) {
         carrier.__SENTRY__.hub = hub;
         return true;
     }
-
-    /**
-     * @inheritdoc
-     */
-    var Session = /** @class */ (function () {
-        function Session(context) {
-            this.errors = 0;
-            this.sid = uuid4();
-            this.duration = 0;
-            this.status = SessionStatus.Ok;
-            this.init = true;
-            this.ignoreDuration = false;
-            // Both timestamp and started are in seconds since the UNIX epoch.
-            var startingTime = timestampInSeconds();
-            this.timestamp = startingTime;
-            this.started = startingTime;
-            if (context) {
-                this.update(context);
-            }
-        }
-        /** JSDoc */
-        // eslint-disable-next-line complexity
-        Session.prototype.update = function (context) {
-            if (context === void 0) { context = {}; }
-            if (context.user) {
-                if (context.user.ip_address) {
-                    this.ipAddress = context.user.ip_address;
-                }
-                if (!context.did) {
-                    this.did = context.user.id || context.user.email || context.user.username;
-                }
-            }
-            this.timestamp = context.timestamp || timestampInSeconds();
-            if (context.ignoreDuration) {
-                this.ignoreDuration = context.ignoreDuration;
-            }
-            if (context.sid) {
-                // Good enough uuid validation. — Kamil
-                this.sid = context.sid.length === 32 ? context.sid : uuid4();
-            }
-            if (context.init !== undefined) {
-                this.init = context.init;
-            }
-            if (context.did) {
-                this.did = "" + context.did;
-            }
-            if (typeof context.started === 'number') {
-                this.started = context.started;
-            }
-            if (this.ignoreDuration) {
-                this.duration = undefined;
-            }
-            else if (typeof context.duration === 'number') {
-                this.duration = context.duration;
-            }
-            else {
-                var duration = this.timestamp - this.started;
-                this.duration = duration >= 0 ? duration : 0;
-            }
-            if (context.release) {
-                this.release = context.release;
-            }
-            if (context.environment) {
-                this.environment = context.environment;
-            }
-            if (context.ipAddress) {
-                this.ipAddress = context.ipAddress;
-            }
-            if (context.userAgent) {
-                this.userAgent = context.userAgent;
-            }
-            if (typeof context.errors === 'number') {
-                this.errors = context.errors;
-            }
-            if (context.status) {
-                this.status = context.status;
-            }
-        };
-        /** JSDoc */
-        Session.prototype.close = function (status) {
-            if (status) {
-                this.update({ status: status });
-            }
-            else if (this.status === SessionStatus.Ok) {
-                this.update({ status: SessionStatus.Exited });
-            }
-            else {
-                this.update();
-            }
-        };
-        /** JSDoc */
-        Session.prototype.toJSON = function () {
-            return dropUndefinedKeys({
-                sid: "" + this.sid,
-                init: this.init,
-                // Make sure that sec is converted to ms for date constructor
-                started: new Date(this.started * 1000).toISOString(),
-                timestamp: new Date(this.timestamp * 1000).toISOString(),
-                status: this.status,
-                errors: this.errors,
-                did: typeof this.did === 'number' || typeof this.did === 'string' ? "" + this.did : undefined,
-                duration: this.duration,
-                attrs: dropUndefinedKeys({
-                    release: this.release,
-                    environment: this.environment,
-                    ip_address: this.ipAddress,
-                    user_agent: this.userAgent,
-                }),
-            });
-        };
-        return Session;
-    }());
 
     /**
      * This calls a function on the current hub.
@@ -3566,19 +3577,24 @@ var Sentry = (function (exports) {
      **/
     var API = /** @class */ (function () {
         /** Create a new instance of API */
-        function API(dsn, metadata) {
+        function API(dsn, metadata, tunnel) {
             if (metadata === void 0) { metadata = {}; }
             this.dsn = dsn;
             this._dsnObject = new Dsn(dsn);
             this.metadata = metadata;
+            this._tunnel = tunnel;
         }
         /** Returns the Dsn object. */
         API.prototype.getDsn = function () {
             return this._dsnObject;
         };
+        /** Does this transport force envelopes? */
+        API.prototype.forceEnvelope = function () {
+            return !!this._tunnel;
+        };
         /** Returns the prefix to construct Sentry ingestion API endpoints. */
         API.prototype.getBaseApiEndpoint = function () {
-            var dsn = this._dsnObject;
+            var dsn = this.getDsn();
             var protocol = dsn.protocol ? dsn.protocol + ":" : '';
             var port = dsn.port ? ":" + dsn.port : '';
             return protocol + "//" + dsn.host + port + (dsn.path ? "/" + dsn.path : '') + "/api/";
@@ -3601,11 +3617,14 @@ var Sentry = (function (exports) {
          * Sending auth as part of the query string and not as custom HTTP headers avoids CORS preflight requests.
          */
         API.prototype.getEnvelopeEndpointWithUrlEncodedAuth = function () {
+            if (this.forceEnvelope()) {
+                return this._tunnel;
+            }
             return this._getEnvelopeEndpoint() + "?" + this._encodedAuth();
         };
         /** Returns only the path component for the store endpoint. */
         API.prototype.getStoreEndpointPath = function () {
-            var dsn = this._dsnObject;
+            var dsn = this.getDsn();
             return (dsn.path ? "/" + dsn.path : '') + "/api/" + dsn.projectId + "/store/";
         };
         /**
@@ -3614,7 +3633,7 @@ var Sentry = (function (exports) {
          */
         API.prototype.getRequestHeaders = function (clientName, clientVersion) {
             // CHANGE THIS to use metadata but keep clientName and clientVersion compatible
-            var dsn = this._dsnObject;
+            var dsn = this.getDsn();
             var header = ["Sentry sentry_version=" + SENTRY_API_VERSION];
             header.push("sentry_client=" + clientName + "/" + clientVersion);
             header.push("sentry_key=" + dsn.publicKey);
@@ -3629,7 +3648,7 @@ var Sentry = (function (exports) {
         /** Returns the url to the report dialog endpoint. */
         API.prototype.getReportDialogEndpoint = function (dialogOptions) {
             if (dialogOptions === void 0) { dialogOptions = {}; }
-            var dsn = this._dsnObject;
+            var dsn = this.getDsn();
             var endpoint = this.getBaseApiEndpoint() + "embed/error-page/";
             var encodedOptions = [];
             encodedOptions.push("dsn=" + dsn.toString());
@@ -3663,13 +3682,16 @@ var Sentry = (function (exports) {
         };
         /** Returns the ingest API endpoint for target. */
         API.prototype._getIngestEndpoint = function (target) {
+            if (this._tunnel) {
+                return this._tunnel;
+            }
             var base = this.getBaseApiEndpoint();
-            var dsn = this._dsnObject;
+            var dsn = this.getDsn();
             return "" + base + dsn.projectId + "/" + target + "/";
         };
         /** Returns a URL-encoded string with auth config suitable for a query string. */
         API.prototype._encodedAuth = function () {
-            var dsn = this._dsnObject;
+            var dsn = this.getDsn();
             var auth = {
                 // We send only the minimum set of required information. See
                 // https://github.com/getsentry/sentry-javascript/issues/2572.
@@ -3835,6 +3857,10 @@ var Sentry = (function (exports) {
          * @inheritDoc
          */
         BaseClient.prototype.captureSession = function (session) {
+            if (!this._isEnabled()) {
+                logger.warn('SDK not enabled, will not capture session.');
+                return;
+            }
             if (!(typeof session.release === 'string')) {
                 logger.warn('Discarded session because of missing or non-string release');
             }
@@ -3903,7 +3929,6 @@ var Sentry = (function (exports) {
             var e_1, _a;
             var crashed = false;
             var errored = false;
-            var userAgent;
             var exceptions = event.exception && event.exception.values;
             if (exceptions) {
                 errored = true;
@@ -3925,19 +3950,15 @@ var Sentry = (function (exports) {
                     finally { if (e_1) throw e_1.error; }
                 }
             }
-            var user = event.user;
-            if (!session.userAgent) {
-                var headers = event.request ? event.request.headers : {};
-                for (var key in headers) {
-                    if (key.toLowerCase() === 'user-agent') {
-                        userAgent = headers[key];
-                        break;
-                    }
-                }
+            // A session is updated and that session update is sent in only one of the two following scenarios:
+            // 1. Session with non terminal status and 0 errors + an error occurred -> Will set error count to 1 and send update
+            // 2. Session with non terminal status and 1 error + a crash occurred -> Will set status crashed and send update
+            var sessionNonTerminal = session.status === SessionStatus.Ok;
+            var shouldUpdateAndSend = (sessionNonTerminal && session.errors === 0) || (sessionNonTerminal && crashed);
+            if (shouldUpdateAndSend) {
+                session.update(__assign(__assign({}, (crashed && { status: SessionStatus.Crashed })), { errors: session.errors || Number(errored || crashed) }));
+                this.captureSession(session);
             }
-            session.update(__assign(__assign({}, (crashed && { status: SessionStatus.Crashed })), { user: user,
-                userAgent: userAgent, errors: session.errors + Number(errored || crashed) }));
-            this.captureSession(session);
         };
         /** Deliver captured session to Sentry */
         BaseClient.prototype._sendSession = function (session) {
@@ -4131,7 +4152,7 @@ var Sentry = (function (exports) {
             // eslint-disable-next-line @typescript-eslint/unbound-method
             var _a = this.getOptions(), beforeSend = _a.beforeSend, sampleRate = _a.sampleRate;
             if (!this._isEnabled()) {
-                return SyncPromise.reject(new SentryError('SDK not enabled, will not send event.'));
+                return SyncPromise.reject(new SentryError('SDK not enabled, will not capture event.'));
             }
             var isTransaction = event.type === 'transaction';
             // 1.0 === 100% events are sent
@@ -4150,15 +4171,7 @@ var Sentry = (function (exports) {
                     return prepared;
                 }
                 var beforeSendResult = beforeSend(prepared, hint);
-                if (typeof beforeSendResult === 'undefined') {
-                    throw new SentryError('`beforeSend` method has to return `null` or a valid event.');
-                }
-                else if (isThenable(beforeSendResult)) {
-                    return beforeSendResult.then(function (event) { return event; }, function (e) {
-                        throw new SentryError("beforeSend rejected with " + e);
-                    });
-                }
-                return beforeSendResult;
+                return _this._ensureBeforeSendRv(beforeSendResult);
             })
                 .then(function (processedEvent) {
                 if (processedEvent === null) {
@@ -4197,6 +4210,26 @@ var Sentry = (function (exports) {
                 _this._processing -= 1;
                 return reason;
             });
+        };
+        /**
+         * Verifies that return value of configured `beforeSend` is of expected type.
+         */
+        BaseClient.prototype._ensureBeforeSendRv = function (rv) {
+            var nullErr = '`beforeSend` method has to return `null` or a valid event.';
+            if (isThenable(rv)) {
+                return rv.then(function (event) {
+                    if (!(isPlainObject(event) || event === null)) {
+                        throw new SentryError(nullErr);
+                    }
+                    return event;
+                }, function (e) {
+                    throw new SentryError("beforeSend rejected with " + e);
+                });
+            }
+            else if (!(isPlainObject(rv) || rv === null)) {
+                throw new SentryError(nullErr);
+            }
+            return rv;
         };
         return BaseClient;
     }());
@@ -4310,7 +4343,7 @@ var Sentry = (function (exports) {
     /** Creates a SentryRequest from a Session. */
     function sessionToSentryRequest(session, api) {
         var sdkInfo = getSdkMetadataForEnvelopeHeader(api);
-        var envelopeHeaders = JSON.stringify(__assign({ sent_at: new Date().toISOString() }, (sdkInfo && { sdk: sdkInfo })));
+        var envelopeHeaders = JSON.stringify(__assign(__assign({ sent_at: new Date().toISOString() }, (sdkInfo && { sdk: sdkInfo })), (api.forceEnvelope() && { dsn: api.getDsn().toString() })));
         // I know this is hacky but we don't want to add `session` to request type since it's never rate limited
         var type = 'aggregates' in session ? 'sessions' : 'session';
         var itemHeaders = JSON.stringify({
@@ -4326,7 +4359,7 @@ var Sentry = (function (exports) {
     function eventToSentryRequest(event, api) {
         var sdkInfo = getSdkMetadataForEnvelopeHeader(api);
         var eventType = event.type || 'event';
-        var useEnvelope = eventType === 'transaction';
+        var useEnvelope = eventType === 'transaction' || api.forceEnvelope();
         var _a = event.debug_meta || {}, transactionSampling = _a.transactionSampling, metadata = __rest(_a, ["transactionSampling"]);
         var _b = transactionSampling || {}, samplingMethod = _b.method, sampleRate = _b.rate;
         if (Object.keys(metadata).length === 0) {
@@ -4346,9 +4379,9 @@ var Sentry = (function (exports) {
         // deserialization. Instead, we only implement a minimal subset of the spec to
         // serialize events inline here.
         if (useEnvelope) {
-            var envelopeHeaders = JSON.stringify(__assign({ event_id: event.event_id, sent_at: new Date().toISOString() }, (sdkInfo && { sdk: sdkInfo })));
+            var envelopeHeaders = JSON.stringify(__assign(__assign({ event_id: event.event_id, sent_at: new Date().toISOString() }, (sdkInfo && { sdk: sdkInfo })), (api.forceEnvelope() && { dsn: api.getDsn().toString() })));
             var itemHeaders = JSON.stringify({
-                type: event.type,
+                type: eventType,
                 // TODO: Right now, sampleRate may or may not be defined (it won't be in the cases of inheritance and
                 // explicitly-set sampling decisions). Are we good with that?
                 sample_rates: [{ id: samplingMethod, rate: sampleRate }],
@@ -4381,7 +4414,7 @@ var Sentry = (function (exports) {
         hub.bindClient(client);
     }
 
-    var SDK_VERSION = '6.5.1';
+    var SDK_VERSION = '6.7.2';
 
     var originalFunctionToString;
     /** Patch toString calls to return proper name for wrapped functions */
@@ -5023,7 +5056,7 @@ var Sentry = (function (exports) {
             this._buffer = new PromiseBuffer(30);
             /** Locks transport after receiving rate limits in a response */
             this._rateLimits = {};
-            this._api = new API(options.dsn, options._metadata);
+            this._api = new API(options.dsn, options._metadata, options.tunnel);
             // eslint-disable-next-line deprecation/deprecation
             this.url = this._api.getStoreEndpointWithUrlEncodedAuth();
         }
@@ -5051,7 +5084,7 @@ var Sentry = (function (exports) {
              */
             var limited = this._handleRateLimit(headers);
             if (limited)
-                logger.warn("Too many requests, backing off until: " + this._disabledUntil(requestType));
+                logger.warn("Too many " + requestType + " requests, backing off until: " + this._disabledUntil(requestType));
             if (status === exports.Status.Success) {
                 resolve({ status: status });
                 return;
@@ -5226,7 +5259,7 @@ var Sentry = (function (exports) {
                 return Promise.reject({
                     event: originalPayload,
                     type: sentryRequest.type,
-                    reason: "Transport locked till " + this._disabledUntil(sentryRequest.type) + " due to too many requests.",
+                    reason: "Transport for " + sentryRequest.type + " requests locked till " + this._disabledUntil(sentryRequest.type) + " due to too many requests.",
                     status: 429,
                 });
             }
@@ -5294,7 +5327,7 @@ var Sentry = (function (exports) {
                 return Promise.reject({
                     event: originalPayload,
                     type: sentryRequest.type,
-                    reason: "Transport locked till " + this._disabledUntil(sentryRequest.type) + " due to too many requests.",
+                    reason: "Transport for " + sentryRequest.type + " requests locked till " + this._disabledUntil(sentryRequest.type) + " due to too many requests.",
                     status: 429,
                 });
             }
@@ -5360,7 +5393,7 @@ var Sentry = (function (exports) {
                 // We return the noop transport here in case there is no Dsn.
                 return _super.prototype._setupTransport.call(this);
             }
-            var transportOptions = __assign(__assign({}, this._options.transportOptions), { dsn: this._options.dsn, _metadata: this._options._metadata });
+            var transportOptions = __assign(__assign({}, this._options.transportOptions), { dsn: this._options.dsn, tunnel: this._options.tunnel, _metadata: this._options._metadata });
             if (this._options.transport) {
                 return new this._options.transport(transportOptions);
             }
@@ -6085,11 +6118,12 @@ var Sentry = (function (exports) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Breadcrumbs.prototype._domBreadcrumb = function (handlerData) {
             var target;
+            var keyAttr = typeof this._options.dom === 'object' ? this._options.dom.serializeAttribute : undefined;
             // Accessing event.target can throw (see getsentry/raven-js#838, #768)
             try {
                 target = handlerData.event.target
-                    ? htmlTreeAsString(handlerData.event.target)
-                    : htmlTreeAsString(handlerData.event);
+                    ? htmlTreeAsString(handlerData.event.target, keyAttr)
+                    : htmlTreeAsString(handlerData.event, keyAttr);
             }
             catch (e) {
                 target = '<unknown>';
