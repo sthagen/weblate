@@ -361,7 +361,7 @@ class AdminUserList(UserList):
                     ),
                 )
                 return redirect("manage-users")
-        return super().post(request, **kwargs)
+        return super().get(request, **kwargs)
 
     def get_context_data(self, **kwargs):
         result = super().get_context_data(**kwargs)

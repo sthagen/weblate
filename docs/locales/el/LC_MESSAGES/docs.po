@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Weblate\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 20:41+0200\n"
-"PO-Revision-Date: 2021-06-19 08:33+0000\n"
+"PO-Revision-Date: 2021-07-03 22:34+0000\n"
 "Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/weblate/"
 "documentation/el/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../admin/access.rst:4 ../../admin/projects.rst:180
@@ -2107,7 +2107,7 @@ msgstr ""
 
 #: ../../admin/addons.rst:432 ../../admin/addons.rst:634
 msgid "Long lines wrapping"
-msgstr ""
+msgstr "Μακριές γραμμές περιτύλιξης"
 
 #: ../../admin/addons.rst:432
 msgid ""
@@ -2134,7 +2134,7 @@ msgstr "Αναδίπλωση γραμμών μόνο σε νέες γραμμέ�
 
 #: ../../admin/addons.rst:441
 msgid "No line wrapping"
-msgstr ""
+msgstr "Χωρίς μακριές γραμμές περιτύλιξης"
 
 #: ../../admin/addons.rst:445
 msgid ""
@@ -35837,7 +35837,7 @@ msgstr "Έλεγχος πρόσβασης έργου"
 
 #: ../../workflows.rst:88 ../../workflows.rst:120 ../../workflows.rst:157
 msgid "Reviewers group"
-msgstr ""
+msgstr "Ομάδα αναθεωρητών"
 
 #: ../../workflows.rst:88 ../../workflows.rst:120
 msgid "N/A"
@@ -35845,11 +35845,11 @@ msgstr "Δ/Υ"
 
 #: ../../workflows.rst:88
 msgid "Not used."
-msgstr ""
+msgstr "Δεν χρησιμοποιήθηκε."
 
 #: ../../workflows.rst:95
 msgid "Peer review"
-msgstr ""
+msgstr "Αξιολόγηση από ομότιμους"
 
 #: ../../workflows.rst:97
 msgid ""
@@ -35863,24 +35863,28 @@ msgstr ""
 
 #: ../../workflows.rst:101
 msgid "*Any user* can vote for suggestions."
-msgstr ""
+msgstr "*Οποιοσδήποτε χρήστης* μπορεί να ψηφίσει για προτάσεις."
 
 #: ../../workflows.rst:102
 msgid ""
 "Suggestions become translations when given a predetermined number of votes."
 msgstr ""
+"Οι προτάσεις γίνονται μεταφράσεις όταν λάβουν έναν προκαθορισμένο αριθμό "
+"ψήφων."
 
 #: ../../workflows.rst:113
 msgid "You can set higher value to require more peer reviews."
 msgstr ""
+"Μπορείτε να ορίσετε υψηλότερη τιμή για να απαιτήσετε περισσότερες "
+"αξιολογήσεις από ομοτίμους."
 
 #: ../../workflows.rst:120
 msgid "Not used, all translators review."
-msgstr ""
+msgstr "Δεν χρησιμοποιείται, όλοι οι μεταφραστές αναθεωρούν."
 
 #: ../../workflows.rst:126
 msgid "Dedicated reviewers"
-msgstr ""
+msgstr "Αφοσιωμένοι αναθεωρητές"
 
 #: ../../workflows.rst:130
 msgid "The proper review workflow is supported since Weblate 2.18."

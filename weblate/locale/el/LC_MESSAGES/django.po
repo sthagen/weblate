@@ -12,13 +12,14 @@
 # jimman2003 <jim41825@gmail.com>, 2020.
 # Michalis <michalisntovas@yahoo.gr>, 2021.
 # Eugenia Russell <eugenia.russell2019@gmail.com>, 2021.
+# Ichnilatis <z8g1r3d2u5d0u3b5@simon13.slack.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: Weblate 4.7\n"
 "Report-Msgid-Bugs-To: https://github.com/WeblateOrg/weblate/issues\n"
 "POT-Creation-Date: 2021-06-16 18:40+0000\n"
-"PO-Revision-Date: 2021-06-22 17:34+0000\n"
-"Last-Translator: THANOS SIOURDAKIS <siourdakisthanos@gmail.com>\n"
+"PO-Revision-Date: 2021-07-07 05:33+0000\n"
+"Last-Translator: Eugenia Russell <eugenia.russell2019@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/weblate/"
 "application/el/>\n"
 "Language: el\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.1-dev\n"
+"X-Generator: Weblate 4.8-dev\n"
 
 #: weblate/accounts/avatar.py:103
 msgctxt "No known user"
@@ -1211,7 +1212,7 @@ msgstr "Περιεχόμενο του παραγόμενου αρχείου"
 
 #: weblate/addons/forms.py:110 weblate/addons/forms.py:197
 msgid "Long lines wrapping"
-msgstr ""
+msgstr "Μακριές γραμμές περιτύλιξης"
 
 #: weblate/addons/forms.py:112
 msgid "Wrap lines at 77 characters and at newlines"
@@ -1223,7 +1224,7 @@ msgstr "Αναδίπλωση γραμμών μόνο σε νέες γραμμέ�
 
 #: weblate/addons/forms.py:114 weblate/addons/forms.py:203
 msgid "No line wrapping"
-msgstr ""
+msgstr "Χωρίς μακριές γραμμές περιτύλιξης"
 
 #: weblate/addons/forms.py:119
 msgid ""
@@ -9941,7 +9942,7 @@ msgstr "Μεταφρασμένα κείμενα με οποιαδήποτε απ
 
 #: weblate/trans/filter.py:57
 msgid "Translated strings with dismissed checks"
-msgstr "Κείμενα με απορρίφθεις ελέγχους"
+msgstr "Μεταφρασμένα κείμενα με απορριφθέντες ελέγχους"
 
 #: weblate/trans/filter.py:60 weblate/trans/filter.py:130
 #, fuzzy
@@ -13048,21 +13049,23 @@ msgstr "Ctrl+Q - Εστίαση στον επεξεργαστή σχολίων"
 
 #: weblate/wladmin/forms.py:96
 msgid "Hover color"
-msgstr ""
+msgstr "Χρώμα Hover"
 
 #: weblate/wladmin/forms.py:97
 msgid "Hide page footer"
-msgstr ""
+msgstr "Απόκρυψη υποσέλιδου σελίδας"
 
 #: weblate/wladmin/forms.py:99
 msgid "Always show hamburger menu"
-msgstr ""
+msgstr "Να εμφανίζεται πάντα το μενού χάμπουργκερ"
 
 #: weblate/wladmin/forms.py:102
 msgid ""
 "Persistent navigational drop-down menu in the top right corner, even if "
 "there is room for a full menu."
 msgstr ""
+"Επίμονο αναπτυσσόμενο μενού πλοήγησης στην επάνω δεξιά γωνία, ακόμη και αν "
+"υπάρχει χώρος για ένα πλήρες μενού."
 
 #: weblate/wladmin/models.py:68
 msgid "Community support"
@@ -13098,7 +13101,7 @@ msgstr ""
 
 #: weblate/wladmin/models.py:205
 msgid "Backup performed"
-msgstr ""
+msgstr "Η δημιουργία αντιγράφων ασφαλείας πραγματοποιήθηκε"
 
 #: weblate/wladmin/models.py:206
 msgid "Backup failed"
@@ -13128,11 +13131,11 @@ msgstr "Επιστροφή στο Weblate"
 
 #: weblate/wladmin/templates/admin/logout-confirm.html:23
 msgid "Please confirm your logout."
-msgstr ""
+msgstr "Παρακαλούμε επιβεβαιώστε την αποσύνδεσή σας."
 
 #: weblate/wladmin/templates/admin/logout-confirm.html:26
 msgid "I confirm logout"
-msgstr ""
+msgstr "Επιβεβαιώνω την αποσύνδεση"
 
 #: weblate/wladmin/templates/admin/trans/change_form.html:9
 msgid "Import speed documentation"
@@ -13140,7 +13143,7 @@ msgstr "Τεκμηρίωση ταχύτητας εισαγωγής"
 
 #: weblate/wladmin/templates/admin/trans/change_form.html:37
 msgid "Required fields are marked in bold."
-msgstr ""
+msgstr "Τα απαιτούμενα πεδία επισημαίνονται με έντονη γραφή."
 
 #: weblate/wladmin/templates/admin/trans/change_form.html:39
 #, fuzzy
@@ -13182,6 +13185,8 @@ msgid ""
 "Could not activate your installation. Please ensure your activation token is "
 "correct."
 msgstr ""
+"Δεν ήταν δυνατή η ενεργοποίηση της εγκατάστασής σας. Βεβαιωθείτε ότι το "
+"διακριτικό ενεργοποίησης είναι σωστό."
 
 #: weblate/wladmin/views.py:234
 msgid "Backup process triggered"

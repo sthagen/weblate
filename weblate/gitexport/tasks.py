@@ -16,31 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+from celery.schedules import crontab
+
+from weblate.gitexport.models import update_all_components
+from weblate.utils.celery import app
 
 
-from django.apps import AppConfig
-from django.core.checks import register
-
-from weblate.gitexport.utils import find_git_http_backend
-from weblate.utils.checks import weblate_check
+@app.task(trail=False)
+def update_gitexport_urls():
+    update_all_components()
 
 
-class GitExportConfig(AppConfig):
-    name = "weblate.gitexport"
-    label = "gitexport"
-    verbose_name = "Git Exporter"
-
-    def ready(self):
-        super().ready()
-        register(check_git_backend)
-
-
-def check_git_backend(app_configs, **kwargs):
-    if find_git_http_backend() is None:
-        return [
-            weblate_check(
-                "weblate.E022",
-                "Failed to find git-http-backend, the git exporter will not work.",
-            )
-        ]
-    return []
+@app.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(
+        crontab(hour=0, minute=40),
+        update_gitexport_urls.s(),
+        name="update_gitexport_urls",
+    )

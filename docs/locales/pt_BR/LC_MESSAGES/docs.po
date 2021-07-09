@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Weblate\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-16 20:41+0200\n"
-"PO-Revision-Date: 2021-06-21 11:33+0000\n"
+"PO-Revision-Date: 2021-07-07 05:33+0000\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "weblate/documentation/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.8-dev\n"
 "Generated-By: Babel 2.8.0\n"
 
 #: ../../admin/access.rst:4 ../../admin/projects.rst:180
@@ -4425,6 +4425,8 @@ msgid ""
 "The environment dump was added as :file:`environment.yml` to help in "
 "restoring in the Docker environments."
 msgstr ""
+"O despejo do ambiente foi adicionado como :file:`environment.yml` para "
+"ajudar na restauração nos ambientes Docker."
 
 #: ../../admin/backup.rst:252
 msgid "Stored in :setting:`DATA_DIR` ``/backups``."
@@ -4455,7 +4457,7 @@ msgstr "Backup de banco de dados PostgreSQL como :file:`database.sql`."
 
 #: ../../admin/backup.rst:260
 msgid "Environment dump as :file:`environment.yml`."
-msgstr ""
+msgstr "Despejo do ambiente como :file:`environment.yml`."
 
 #: ../../admin/backup.rst:262
 msgid ""
@@ -4469,6 +4471,8 @@ msgstr ""
 #: ../../admin/backup.rst:265
 msgid "To restore the database backup load it using dabase tools, for example:"
 msgstr ""
+"Para restaurar o backup do banco de dados, carregue-o usando ferramentas de "
+"banco de dados, por exemplo:"
 
 #: ../../admin/backup.rst:272
 msgid "Version control repositories"
@@ -5696,6 +5700,8 @@ msgid ""
 "Image showing the Weblate administration panel with the above configuration "
 "filled in."
 msgstr ""
+"Imagem mostrando o painel de administração do Weblate com a configuração "
+"acima preenchida."
 
 #: ../../admin/config.rst:6
 msgid ""
@@ -7874,6 +7880,7 @@ msgstr "DEFAULT_PAGE_LIMIT"
 #: ../../admin/config.rst:1583
 msgid "Default number of elements to display when pagination is active."
 msgstr ""
+"Número padrão de elementos a serem exibidos quando a paginação está ativa."
 
 #: ../../admin/config.rst:1588
 msgid "PAGURE_CREDENTIALS"
@@ -10904,12 +10911,17 @@ msgid ""
 "Use adjacent location for running the database server, otherwise the "
 "networking performance or reliability might ruin your Weblate experience."
 msgstr ""
+"Use um local adjacente para executar o servidor de banco de dados, caso "
+"contrário, o desempenho ou confiabilidade da rede podem arruinar sua "
+"experiência com o Weblate."
 
 #: ../../admin/install.rst:859
 msgid ""
 "Check the database server performance or tweak its configuration, for "
 "example using `PGTune <https://pgtune.leopard.in.ua/>`_."
 msgstr ""
+"Verifique o desempenho do servidor de banco de dados ou ajuste sua "
+"configuração, por exemplo, usando `PGTune <https://pgtune.leopard.in.ua/>`_."
 
 #: ../../admin/install.rst:864
 msgid ""
@@ -13643,6 +13655,8 @@ msgid ""
 "When creating the volumes manually, the directories should be owned by UID "
 "1000 as that is user used inside the container."
 msgstr ""
+"Ao criar os volumes manualmente, os diretórios devem pertencer ao UID 1000, "
+"pois é o usuário usado dentro do contêiner."
 
 #: ../../admin/install/docker.rst:1398
 msgid ""
@@ -19169,6 +19183,13 @@ msgid ""
 "`Autoaccept suggestions` to set a threshold for accepted suggestions (this "
 "includes a vote from the user making the suggestion if it is cast)."
 msgstr ""
+"Todos podem adicionar sugestões por padrão, para serem aceitas por usuários "
+"autenticados. A votação de sugestões pode ser usada para fazer o uso de um "
+"texto quando mais de um usuário autenticado concorda, ao configurar a "
+":ref:`component` com :guilabel:`Votação de sugestões` para ativar a votação, "
+"e :guilabel:`Aceitar sugestões automaticamente` para estipular um limite "
+"para sugestões aceitas (isso inclui um voto do usuário fazendo a sugestão, "
+"se ela for lançada)."
 
 #: ../../admin/translating.rst:18
 msgid ""
@@ -19177,12 +19198,18 @@ msgid ""
 "with the :guilabel:`Edit string when suggestions are enforced` :ref:"
 "`permission <privileges>`."
 msgstr ""
+"Uma vez que a aceitação automática está configurada, usuários normais perdem "
+"o privilégio de salvar diretamente traduções ou aceitar sugestões. Isso pode "
+"ser sobrescrito pela :ref:`permissão <privileges>` :guilabel:`Editar texto "
+"quando as sugestões são forçadas`."
 
 #: ../../admin/translating.rst:23
 msgid ""
 "You can combine these with :ref:`access control <access-control>` into one "
 "of the following setups:"
 msgstr ""
+"Você pode combiná-las com :ref:`controle de acesso <access-control>`para uma "
+"das configurações a seguir:"
 
 #: ../../admin/translating.rst:26
 msgid ""
@@ -19190,6 +19217,9 @@ msgid ""
 "accepted. - Turn on voting. - Turn off automatic acceptance. - Don't let "
 "users save translations."
 msgstr ""
+"Usuários sugerem e votam por sugestões e um grupo limitado controla o que é "
+"aceito. - Ativar votação. - Desativar aceitação automática. - Não deixar "
+"usuários salvarem traduções."
 
 #: ../../admin/translating.rst:31
 msgid ""
@@ -19197,6 +19227,9 @@ msgid ""
 "defined number of them agree. - Turn on voting. - Set the desired number of "
 "votes for automatic acceptance."
 msgstr ""
+"Usuários sugerem e votam em sugestões com aceitação automática uma vez que "
+"um número definido deles concorda. - Ativar votação. - Definir o numero "
+"desejado de votos para aceitação automática."
 
 #: ../../admin/translating.rst:35
 msgid ""
@@ -19204,6 +19237,9 @@ msgid ""
 "are unsure about a translation by making multiple suggestions.) - Only turn "
 "on voting."
 msgstr ""
+"Voto opcional para sugestões. (Pode ser usado opcionalmente pelos usuários "
+"quando não têm certeza sobre uma tradução, marcando múltiplas sugestões.) - "
+"Apenas ativar a votação."
 
 #: ../../admin/translating.rst:42
 msgid "Additional info on source strings"
@@ -19216,26 +19252,36 @@ msgid ""
 "Some of that info may be extracted from the translation files and some may "
 "be added by editing the additional string info:"
 msgstr ""
+"Melhore o processo de tradução adicionando informações extra para os textos "
+"incluindo explicações, prioridades dos textos, marcadores de verificações e "
+"contexto visual. Algumas dessas informações podem ser extraídas dos arquivos "
+"de tradução e podem ser adicionadas ao editar as informações adicionais do "
+"texto:"
 
 #: ../../admin/translating.rst:51
 msgid ""
 "Access this directly from the translation interface by clicking the \"Edit\" "
 "icon next to :guilabel:`Screenshot context` or :guilabel:`Flags`."
 msgstr ""
+"Acesse isso diretamente da interface de tradução clicando no ícone \"Editar\""
+" perto de :guilabel:`Contexto da captura de tela` ou :guilabel:`Marcadores`."
 
 #: ../../admin/translating.rst:57
 msgid "Strings prioritization"
-msgstr ""
+msgstr "Priorização dos textos"
 
 #: ../../admin/translating.rst:61
 msgid ""
 "String priority can be changed to offer higher priority strings for "
 "translation earlier by using the ``priority`` flag."
 msgstr ""
+"A prioridade dos textos pode ser mudada para oferecer textos prioritários "
+"para tradução antes, usando o marcador ``priority``."
 
 #: ../../admin/translating.rst:66
 msgid "This can be used to order the flow of translation in a logical manner."
 msgstr ""
+"Isso pode ser utilizado para organizar a ordem de tradução de maneira lógica."
 
 #: ../../admin/translating.rst:68
 msgid ":ref:`checks`"
@@ -19246,6 +19292,8 @@ msgid ""
 "Previously called :guilabel:`Quality checks flags`, it no longer configures "
 "only checks."
 msgstr ""
+"Anteriormente chamado de :guilabel:`Marcadores de verificações de qualidade`"
+", ele já não configura apenas verificações."
 
 #: ../../admin/translating.rst:82
 msgid ""
@@ -19253,6 +19301,9 @@ msgid ""
 "`component` and the translation file. However, you might want to use it to "
 "customize this per source string."
 msgstr ""
+"O conjunto padrão de sinalizadores de tradução é determinado pela "
+":ref:`component` de tradução e o arquivo de tradução. No entanto, você pode "
+"querer usá-lo para personalizar isso por texto fonte."
 
 #: ../../admin/translating.rst:94
 msgid "Explanation"
@@ -19260,7 +19311,7 @@ msgstr "Explicação"
 
 #: ../../admin/translating.rst:98
 msgid "In previous versions this has been called :guilabel:`Extra context`."
-msgstr ""
+msgstr "Nas versões anteriores, isso era chamado de :guilabel:`Contexto extra`."
 
 #: ../../admin/translating.rst:100
 msgid ""
@@ -19353,50 +19404,59 @@ msgstr ""
 
 #: ../../admin/upgrade.rst:36
 msgid "For pip installs it can be achieved by:"
-msgstr ""
+msgstr "Para instalações pip, isso pode ser alcançado da seguinte forma:"
 
 #: ../../admin/upgrade.rst:42
 msgid ""
 "With Git checkout you need to fetch new source code and update your "
 "installation:"
 msgstr ""
+"Com um checkout do Git, você precisa obter o novo código-fonte e atualizar "
+"sua instalação:"
 
 #: ../../admin/upgrade.rst:53
 msgid ""
 "Upgrade configuration file, refer to :file:`settings_example.py` or :ref:"
 "`version-specific-instructions` for needed steps."
 msgstr ""
+"Atualize o arquivo de configuração, consulte o :file:`settings_example.py` "
+"ou :ref:`version-specific-instructions`para os passos necessários."
 
 #: ../../admin/upgrade.rst:56
 msgid "Upgrade database structure:"
-msgstr ""
+msgstr "Atualize estrutura do banco de dados:"
 
 #: ../../admin/upgrade.rst:62
 msgid ""
 "Collect updated static files (see :ref:`server` and :ref:`static-files`):"
 msgstr ""
+"Colete arquivos estáticos atualizados (veja :ref:`server` e :ref:`static-"
+"files`):"
 
 #: ../../admin/upgrade.rst:74
 msgid ""
 "If you are running version from Git, you should also regenerate locale files "
 "every time you are upgrading. You can do this by invoking:"
 msgstr ""
+"Se você está usando uma versão do Git, você também deve gerar novamente "
+"arquivos locais toda vez que estiver atualizando. Você pode fazer isso "
+"invocando:"
 
 #: ../../admin/upgrade.rst:81
 msgid "Verify that your setup is sane (see also :ref:`production`):"
-msgstr ""
+msgstr "Verifique que sua configuração é sana (ver também :ref:`production`):"
 
 #: ../../admin/upgrade.rst:87
 msgid "Restart celery worker (see :ref:`celery`)."
-msgstr ""
+msgstr "Reinicie o worker do Celery (veja :ref:`celery`)."
 
 #: ../../admin/upgrade.rst:93
 msgid "Version specific instructions"
-msgstr ""
+msgstr "Instruções específicas de versão"
 
 #: ../../admin/upgrade.rst:96
 msgid "Upgrade from 2.x"
-msgstr ""
+msgstr "Atualizar de 2.x"
 
 #: ../../admin/upgrade.rst:98
 msgid ""
@@ -19404,6 +19464,9 @@ msgid ""
 "then continue upgrading in the 3.x series. Upgrades skipping this step are "
 "not supported and will break."
 msgstr ""
+"Se você está atualizando da versão 2.x, sempre atualize para a 3.0.1 antes e "
+"depois continue atualizando na série 3.x. Atualizações pulando esse passo "
+"não são suportadas e não funcionarão corretamente."
 
 #: ../../admin/upgrade.rst:104
 msgid ""
