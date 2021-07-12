@@ -125,11 +125,11 @@ class ConvertFormat(TranslationFormat):
             storefile = open(storefile, "rb")
         # Adjust store to have translations
         store = cls.convertfile(storefile, template_store)
-        for unit in store.units:
-            if unit.isheader():
-                continue
-            # HTML does this properly on loading, others need it
-            if cls.needs_target_sync:
+        if cls.needs_target_sync:
+            for unit in store.units:
+                if unit.isheader():
+                    continue
+                # HTML does this properly on loading, others need it
                 unit.target = unit.source
                 unit.rich_target = unit.rich_source
         return store
@@ -362,6 +362,7 @@ class WindowsRCFormat(ConvertFormat):
     format_id = "rc"
     autoload = ("*.rc",)
     language_format = "bcp"
+    needs_target_sync = False
 
     @staticmethod
     def mimetype():
@@ -378,7 +379,10 @@ class WindowsRCFormat(ConvertFormat):
         input_store = rcfile()
         input_store.parse(storefile.read())
         convertor = rc2po()
-        store = convertor.convert_store(input_store)
+        if template_store:
+            store = convertor.merge_store(template_store.store.rcfile, input_store)
+        else:
+            store = convertor.convert_store(input_store)
         store.rcfile = input_store
         return store
 
