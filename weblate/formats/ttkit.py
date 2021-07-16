@@ -202,10 +202,6 @@ class KeyValueUnit(TTKitUnit):
             return not self.unit.isfuzzy() and self.unit.value != ""
         return self.unit.istranslated()
 
-    def set_target(self, target):
-        """Set translation unit target."""
-        super().set_target(target)
-
 
 class TTKitFormat(TranslationFormat):
     unit_class = TTKitUnit
@@ -604,6 +600,12 @@ class XliffUnit(TTKitUnit):
             return ""
 
         return rich_to_xliff_string(self.unit.rich_target)
+
+    def _invalidate_target(self):
+        """Invalidate target cache."""
+        super()._invalidate_target()
+        if "xliff_node" in self.__dict__:
+            del self.__dict__["xliff_node"]
 
     def set_target(self, target):
         """Set translation unit target."""
