@@ -395,7 +395,12 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
             self.source_unit_save()
 
         # Update manual variants
-        self.update_variants()
+        if (
+            self.old_unit["extra_flags"] != self.extra_flags
+            or self.context != self.old_unit["context"]
+            or force_insert
+        ):
+            self.update_variants()
 
         # Update terminology
         self.sync_terminology()
@@ -424,11 +429,12 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
 
     def store_old_unit(self, unit):
         self.old_unit = {
-            "state": self.state,
-            "source": self.source,
-            "target": self.target,
-            "extra_flags": self.extra_flags,
-            "explanation": self.explanation,
+            "state": unit.state,
+            "source": unit.source,
+            "target": unit.target,
+            "context": unit.context,
+            "extra_flags": unit.extra_flags,
+            "explanation": unit.explanation,
         }
 
     @property
@@ -891,7 +897,10 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
         if self.pending:
             change_author = self.get_last_content_change()[0]
             if change_author != author:
-                self.translation.commit_pending("pending unit", user)
+                # This intentionally discards user - the translating user
+                # has no control on what this does (it can even trigger update
+                # of the repo)
+                self.translation.commit_pending("pending unit", None)
 
         # Propagate to other projects
         # This has to be done before changing source for template
@@ -1428,15 +1437,21 @@ class Unit(FastDeleteModelMixin, models.Model, LoggerMixin):
 
     def get_flag_actions(self):
         flags = self.all_flags
+        translation = self.translation
+        component = translation.component
         result = []
-        if self.is_source or self.translation.component.is_glossary:
+        if self.is_source or component.is_glossary:
             if "read-only" in flags:
-                result.append(
-                    ("removeflag", "read-only", gettext("Unmark as read-only"))
-                )
+                if (
+                    "read-only" not in translation.all_flags
+                    and "read-only" not in component.all_flags
+                ):
+                    result.append(
+                        ("removeflag", "read-only", gettext("Unmark as read-only"))
+                    )
             else:
                 result.append(("addflag", "read-only", gettext("Mark as read-only")))
-        if self.translation.component.is_glossary:
+        if component.is_glossary:
             if "forbidden" in flags:
                 result.append(
                     (

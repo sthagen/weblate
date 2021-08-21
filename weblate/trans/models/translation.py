@@ -434,6 +434,7 @@ class Translation(
                 self.sync_unit(dbunits, updated, id_hash, unit, pos + 1)
 
         except FileParseError as error:
+            report_error(cause="Failed to parse file on update")
             self.log_warning("skipping update due to parse error: %s", error)
             return
 
@@ -1031,7 +1032,7 @@ class Translation(
                 is_batch_update=True,
             )
             accepted += 1
-        self.invalidate_cache()
+        self.component.invalidate_cache()
         if self.component.needs_variants_update:
             self.component.update_variants()
         self.component.schedule_sync_terminology()
@@ -1225,7 +1226,9 @@ class Translation(
         if auto_context:
             suffix = 0
             base = context
-            while self.unit_set.filter(context=context, source=source).exists():
+            if not has_template:
+                kwargs = {"source": source}
+            while self.unit_set.filter(context=context, **kwargs).exists():
                 suffix += 1
                 context = f"{base}{suffix}"
 
@@ -1308,6 +1311,7 @@ class Translation(
             if self.component.needs_variants_update:
                 component.update_variants()
             component.schedule_sync_terminology()
+            component.invalidate_cache()
         return result
 
     @transaction.atomic

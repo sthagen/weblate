@@ -1163,6 +1163,11 @@ List of enabled machine translation services to use.
     Many of the services need additional configuration like API keys, please check
     their documentation :ref:`machine-translation-setup` for more details.
 
+.. hint::
+
+    When using Docker container, this configuration is automatically generated
+    based on provided API keys, see :ref:`docker-machine`.
+
 .. code-block:: python
 
     MT_SERVICES = (
@@ -1937,7 +1942,7 @@ The default value is:
 
 .. code-block:: python
 
-    SPECIAL_CHARS = ("\t", "\n", "…")
+    SPECIAL_CHARS = ("\t", "\n", "\u00a0", "…")
 
 .. setting:: SINGLE_PROJECT
 

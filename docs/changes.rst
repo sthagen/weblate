@@ -1,7 +1,27 @@
-Weblate 4.8
+Weblate 4.8.1
 -------------
 
 Not yet released.
+
+`All changes in detail <https://github.com/WeblateOrg/weblate/milestone/70?closed=1>`__.
+
+Weblate 4.8
+-----------
+
+Released on August 21th 2021.
+
+* Added support for Apple stringsdict format.
+* The exact search operator is now case-sensitive on PostgreSQL.
+* Fixed saving glossary explanations in some cases.
+* Documentation improvements.
+* Performance improvements.
+* Improved squash add-on compatibility with Gerrit.
+* Fixed adding strings to a monolingual glossary components.
+* Improved performance in hadling variants.
+* Fixed squash add-on sometimes skipping parsing upstream changes.
+* Preserve file extension on download.
+* Added support for the Fluent format.
+* Add support for using tabs to indent JSON formats.
 
 `All changes in detail <https://github.com/WeblateOrg/weblate/milestone/67?closed=1>`__.
 

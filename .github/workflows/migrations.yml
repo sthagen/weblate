@@ -61,11 +61,13 @@ jobs:
         run: ./ci/run-migrate 4.6
       - name: Migrate from 4.7
         run: ./ci/run-migrate 4.7
+      - name: Migrate from 4.8
+        run: ./ci/run-migrate 4.8
       - name: Coverage
         run: |
           coverage combine
           coverage xml
-      - uses: codecov/codecov-action@v1.5.2
+      - uses: codecov/codecov-action@v2.0.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           flags: migrations

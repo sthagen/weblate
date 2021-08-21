@@ -153,7 +153,7 @@ NOTIFICATION_PREFIX_TEMPLATE = "notifications__{}"
 
 
 def get_auth_keys():
-    return set(load_backends(social_django.utils.BACKENDS).keys())
+    return set(load_backends(settings.AUTHENTICATION_BACKENDS).keys())
 
 
 class EmailSentView(TemplateView):
@@ -1351,6 +1351,10 @@ def saml_metadata(request):
 class UserList(ListView):
     paginate_by = 50
     model = User
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         users = User.objects.filter(is_active=True)

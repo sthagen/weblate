@@ -26,6 +26,7 @@ import urllib.parse
 from configparser import NoOptionError, NoSectionError
 from datetime import datetime
 from json import JSONDecodeError, dumps
+from time import sleep
 from typing import Dict, Iterator, List, Optional, Tuple
 from zipfile import ZipFile
 
@@ -89,6 +90,25 @@ class GitRepository(Repository):
 
     @staticmethod
     def git_config_update(filename: str, *updates: Tuple[str, str, str]):
+        # First, open file read-only to check current settings
+        modify = False
+        with GitConfigParser(file_or_files=filename, read_only=True) as config:
+            for section, key, value in updates:
+                try:
+                    old = config.get(section, key)
+                    if value is None:
+                        modify = True
+                        break
+                    if old == value:
+                        continue
+                except (NoSectionError, NoOptionError):
+                    pass
+                if value is not None:
+                    modify = True
+        if not modify:
+            return
+        # In case changes are needed, open it for writing as that creates a lock
+        # file
         with GitConfigParser(file_or_files=filename, read_only=False) as config:
             for section, key, value in updates:
                 try:
@@ -405,7 +425,14 @@ class GitRepository(Repository):
             )
 
         filename = os.path.join(data_dir("home"), ".gitconfig")
-        cls.git_config_update(filename, *updates)
+        attempts = 0
+        while attempts < 5:
+            try:
+                cls.git_config_update(filename, *updates)
+                break
+            except OSError:
+                attempts += 1
+                sleep(attempts * 0.1)
 
     def get_file(self, path, revision):
         """Return content of file at given revision."""
@@ -662,8 +689,16 @@ class GitMergeRequestBase(GitForcePushRepository):
         else:
             path = parsed.path
         parts = path.split(":")[-1].rstrip("/").split("/")
-        slug = parts[-1].replace(".git", "")
-        owner = "/".join(part for part in parts[:-1] if part)
+        slug_parts = [parts[-1].replace(".git", "")]
+        owner = ""
+        for part in parts[:-1]:
+            if not part:
+                continue
+            if not owner:
+                owner = part
+                continue
+            slug_parts.insert(-1, part)
+        slug = "/".join(slug_parts)
         return (
             self.API_TEMPLATE.format(
                 host=self.format_api_host(host),

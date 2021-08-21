@@ -76,7 +76,7 @@ Upload translations files
     or do not want to integrate it with Weblate. You can later update the
     content using the web interface or :ref:`api`.
 Translate document
-    Upload single document and translate that.
+    Upload single document or translation file and translate that.
 Start from scratch
     Create blank translation project and add strings manually.
 
@@ -348,8 +348,9 @@ When empty, no such links will be generated. You can use :ref:`markup`.
 For example on GitHub, use something like:
 ``https://github.com/WeblateOrg/hello/blob/{{branch}}/{{filename}}#L{{line}}``
 
-In case your paths are relative to different folder, you might want to strip leading
-directory by ``parentdir`` filter (see :ref:`markup`):
+In case your paths are relative to different folder (path contains ``..``), you
+might want to strip leading directory by ``parentdir`` filter (see
+:ref:`markup`):
 ``https://github.com/WeblateOrg/hello/blob/{{branch}}/{{filename|parentdir}}#L{{line}}``
 
 .. _component-git_export:
@@ -494,6 +495,10 @@ It's usually a good idea to turn this off for monolingual translations, unless
 you are using the same IDs across the whole project.
 
 Default value can be changed by :setting:`DEFAULT_TRANSLATION_PROPAGATION`.
+
+.. seealso::
+
+   :ref:`translation-consistency`
 
 .. _component-enable_suggestions:
 
